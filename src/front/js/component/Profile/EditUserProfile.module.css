@@ -1,0 +1,83 @@
+.editButton {
+    background-color: transparent;
+    color: var(--color-lime);
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 0%;
+}
+
+.editButton:hover {
+    color: var(--color-white);
+    background-color: var(--color-light-gray);
+}
+
+.editButton:active {
+    background-color: var(--color-navy);
+    color: var(--color-orange-red);
+}
+
+.modal {
+    color: #383838;
+    /* Charcoal */
+}
+
+.modalHeader {
+    background-color: var(--color-navy);
+}
+
+.modalTitle {
+    color: var(--color-white);
+}
+
+.modalBody {
+    background-color: var(--color-light-gray);
+}
+
+.modalFooter {
+    background-color: var(--color-navy);
+}
+
+.closeButton,
+.saveButton {
+    border-radius: 5px;
+    border: none;
+}
+
+.closeButton {
+    background-color: var(--color-orange-red);
+    color: var(--color-white);
+}
+
+.saveButton {
+    background-color: var(--color-lime);
+    color: var(--color-white);
+}
+
+.form-control {
+    margin-bottom: 10px;
+    border: 1px solid var(--color-navy);
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.modal-centered {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.messageContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.updateMessage {
+    color: var(--color-navy);
+    font-size: 1.2em;
+    text-align: center;
+}

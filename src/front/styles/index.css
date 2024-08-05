@@ -1,3 +1,22 @@
 /* 
     General Styles used on every website (Don't Repeat Yourself)
 */
+body {
+    margin: 0;
+    /* overflow: hidden; Evita el desplazamiento vertical cuando se aplica el desenfoque */
+    color: rgb(44, 43, 43);
+    background-color: var(--color-backgroun-landing);
+
+}
+
+:root {
+    --color-navy: #003366;
+    --color-lime: #99CC00;
+    --color-light-gray: #f9f9f9;
+    --color-grey: #A8A7A8;
+    --color-white: #FFFFFF;
+    --color-orange-red: #FF4500;
+    --color-backgroun-landing: rgb(176 176 176 / 2%);
+    --color-black-transparent: rgba(0, 0, 0, 0.39);
+
+}

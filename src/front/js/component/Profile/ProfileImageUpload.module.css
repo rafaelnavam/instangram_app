@@ -1,0 +1,54 @@
+.editButton {
+    background-color: transparent;
+    color: var(--color-lime);
+    border: none;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    margin-top: 0px;
+}
+
+.editButton:hover {
+    color: var(--color-navy);
+    background-color: var(--color-light-gray);
+}
+
+.editButton:active {
+    background-color: var(--color-lime);
+    color: var(--color-navy);
+}
+
+.dropdownMenu {
+    font-size: 1rem;
+    width: 100%;
+}
+
+.dropdownItem {
+    padding: 10px 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdownItem:hover {
+    background-color: var(--color-light-gray);
+    color: var(--color-navy);
+}
+
+.modalHeader {
+    background-color: var(--color-navy);
+    color: var(--color-white);
+}
+
+.modalBody {
+    padding: 20px;
+}
+
+.modalFooter {
+    display: flex;
+    justify-content: space-between;
+}
+
+.modalProfile {
+    color: var(--color-navy);
+}
