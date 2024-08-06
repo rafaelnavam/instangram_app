@@ -1,0 +1,128 @@
+.postsContainer {
+    padding: 10px;
+    max-width: 600px;
+    margin: auto;
+}
+
+.scrollContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 80vh;
+    overflow-y: scroll;
+}
+
+.postCard {
+    cursor: pointer;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 10px;
+}
+
+.cardHeader {
+    display: flex;
+    background: white;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;
+    padding: 10px 15px;
+}
+
+.authorInfo {
+    display: flex;
+    align-items: center;
+}
+
+.authorAvatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.authorName {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.postLocation {
+    font-size: 12px;
+    color: gray;
+}
+
+.cardBody {
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+.postImage {
+    width: 100%;
+    height: auto;
+}
+
+.postActions {
+    display: flex;
+    font-size: 35px;
+}
+
+.likeContainer {
+    position: relative;
+}
+
+.loginMessage {
+    position: absolute;
+    top: -30px;
+    left: 0;
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeInOut 3s forwards;
+}
+
+@keyframes fadeInOut {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+.liked {
+    color: red;
+}
+
+.likes {
+    font-size: 14px;
+    padding: 0 15px;
+}
+
+.boldText {
+    font-weight: bold;
+}
+
+.date {
+    font-size: 12px;
+    color: gray;
+    padding: 0 15px;
+}
+
+.carouselCounter {
+    position: absolute;
+    top: 70px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    z-index: 1;
+}

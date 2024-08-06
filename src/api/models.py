@@ -53,7 +53,6 @@ class User(db.Model):
             "is_active": self.is_active,
             "name": self.name,
             "last_name": self.last_name,
-            "password": self.password,
             "register_date": self.registration_date.isoformat(),
             "account_update": self.last_update_date.isoformat(),
             "profile_image_url": self.profile_image.img_url if self.profile_image else None,
@@ -79,24 +78,27 @@ class PostImage(db.Model):
 # Tabla de Publicaciones
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    image = db.Column(db.String(255), nullable=False)
     message = db.Column(db.String(500), nullable=False)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     location = db.Column(db.String(30), nullable=False)
     status = db.Column(db.String(10), nullable=False)
+    images = db.relationship('PostImage', backref='post', lazy=True)  # Relación con PostImage
     likes = db.relationship('Likes', backref='post', lazy=True)
 
     def serialize(self):
         return {
             "id": self.id,
-            "image": self.image,
             "message": self.message,
-            "author_id": self.author_id,
+            "author": self.author.serialize(),  # Serializar la información del autor
             "created_at": self.created_at.isoformat(),
             "location": self.location,
             "status": self.status,
+            "images": [image.img_url for image in self.images],  # Serializar las URLs de las imágenes
             "likes_count": len(self.likes),
+            "liked_by_user": [like.user_id for like in self.likes],  # Usuarios que dieron like
+            "author": self.author.serialize()
+
         }
 
 # Tabla de Likes

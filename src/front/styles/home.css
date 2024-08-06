@@ -5,3 +5,9 @@
     one more css for each page that will contain the selected used 
     on that page only (the ones not reused in other pages).
 */
+body {
+    margin: 0;
+    /* overflow: hidden; Evita el desplazamiento vertical cuando se aplica el desenfoque */
+    color: rgb(44, 43, 43);
+    background-color: var(--color-backgroun-landing);
+}

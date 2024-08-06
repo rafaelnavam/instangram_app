@@ -1,9 +1,9 @@
 .loginRegisterContainer {
     padding: 30px;
     margin-bottom: 15px;
-    /* background-color: var(--color-background-landing); */
+    background-color: #ffffff;
     border-radius: 10px;
-    /* box-shadow: 0 4px 8px rgb(0 0 0 / 34%); */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .headerRow {
@@ -12,17 +12,17 @@
 
 .header {
     text-align: center;
-    color: var(--color-navy);
+    color: #262626;
     font-weight: bold;
-    font-size: 2.5rem;
+    font-size: 2rem;
 }
 
 .subHeader {
     text-align: left;
-    color: #333;
+    color: #262626;
     font-weight: bold;
     margin-bottom: 20px;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
 }
 
 .formContainer {
@@ -30,15 +30,15 @@
 }
 
 .form {
-    background-color: var(--color-white);
+    background-color: #ffffff;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 1px 1px 6px 3px rgb(176 176 176);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .input {
     border-radius: 5px;
-    border: 1px solid var(--color-grey);
+    border: 1px solid #dbdbdb;
     margin-bottom: 15px;
     padding: 10px;
     font-size: 1rem;
@@ -51,19 +51,20 @@
 .passwordToggle {
     position: absolute;
     right: 10px;
-    color: gray;
-    transform: translateY(-250%);
+    top: 50%;
+    transform: translateY(-50%);
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
+    color: #8e8e8e;
 }
 
 .loginButton,
 .registerButton {
-    background-color: var(--color-orange-red);
+    background-color: #0095f6;
     border: none;
-    color: var(--color-white);
+    color: #ffffff;
     font-weight: bold;
     width: 100%;
     padding: 10px;
@@ -73,49 +74,45 @@
 
 .loginButton:hover,
 .registerButton:hover {
-    background-color: #cc3700;
+    background-color: #007bb5;
 }
 
 .forgotPassword {
     display: block;
     margin-top: 10px;
-    color: #003366;
+    color: #00376b;
     text-align: center;
 }
 
 .socialLoginButtons {
-    margin-top: 1px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.facebookButton {
-    background-color: #3b5998;
-    color: var(--color-white);
-    border: none;
-}
-
 .googleButton {
     background-color: #db4437;
-    color: #fff;
+    color: #ffffff;
     border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .googleButton:hover {
-    background-color: #ffffff;
-    color: #cc3700;
+    background-color: #c33c2e;
 }
 
 .googleLogo {
     width: 20px;
     height: 20px;
     margin-right: 10px;
-    margin-left: 10px;
 }
 
 .privacyPolicy {
     margin-top: 20px;
-    color: var(--color-grey);
+    color: #8e8e8e;
     font-size: 0.9rem;
+    text-align: center;
 }

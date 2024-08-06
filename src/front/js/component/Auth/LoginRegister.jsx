@@ -175,7 +175,7 @@ const LoginRegister = () => {
                         setMessageLogin("Tus datos son correctos.");
 
                         setTimeout(() => {
-                            navigate("/my-profile");
+                            navigate("/my-account");
                             setMessageLogin("");
                         }, 2000);
                     } else {
@@ -428,7 +428,7 @@ const LoginRegister = () => {
                                 </Button>
                             </div>
                             <p className={styles.privacyPolicy}>
-                                Sus datos personales se utilizarán para respaldar su experiencia en este sitio web, para administrar el acceso a su cuenta y para otros fines descritos en nuestra <Link to="/privacy-policy">política de privacidad</Link>.
+                                Es posible que las personas que usan nuestro servicio hayan subido tu información de contacto a Instagram sample.
                             </p>
                         </Form>
                     </Col>

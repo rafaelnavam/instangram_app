@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Context } from '../../store/appContext';
+import { useNavigate } from "react-router-dom";
 import styles from "./EditUserProfile.module.css"; // Importación de estilos CSS
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
 const EditUserProfileEco = () => {
     const { store, actions } = useContext(Context);
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: "",
         name: "",
@@ -13,6 +15,16 @@ const EditUserProfileEco = () => {
         username: "",
         password: ""
     });
+
+
+    useEffect(() => {
+        const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
+
+        // if (!isAuthenticated || dataRole !== "master") {
+        if (!isAuthenticated) {
+            navigate("/");
+        }
+    }, [navigate]);
 
     useEffect(() => {
         if (store.uploadedUserData) {

@@ -16,6 +16,8 @@ import ResetPassword from "./component/Auth/ResetPassword.jsx";
 import ConfirmarEmail from "./component/Auth/ConfirmEmail.jsx";
 
 import UserProfile from "./component/Profile/UserProfile.jsx";
+import AllPosts from "./pages/AllPosts.jsx";
+import ProfileOtherUser from "./component/Profile/ProfileOtherUser.jsx";
 
 //create your first component
 const Layout = () => {
@@ -32,13 +34,13 @@ const Layout = () => {
         <ScrollToTop>
           <Navbar />
           <Routes>
-            <Route element={<Home />} path="/" />
+            <Route element={<AllPosts />} path="/" />
             <Route element={<LoginReister />} path="/login-register" />
             <Route element={<UserProfile />} path="/my-account" />
             <Route element={<PasswordResetRequest />} path="/forgot-password" />
             <Route element={<ResetPassword />} path="/reset-password" />
             <Route element={<ConfirmarEmail />} path="/ConfirmEmail" />
-            <Route element={<ConfirmarEmail />} path="/ConfirmEmail" />
+            <Route element={<ProfileOtherUser />} path="/profile/:username" />
 
             <Route element={<h1>Not found!</h1>} />
           </Routes>

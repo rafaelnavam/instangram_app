@@ -278,7 +278,7 @@ def create_normal_user_token():
                 expires = timedelta(hours=1)
                 user_id = existing_user.id
                 access_token = create_access_token(identity=user_id, expires_delta=expires)
-                return jsonify({'access_token': access_token, 'login': True, 'role': role, 'user_id': user_id}), 200
+                return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200
             else:
                 return jsonify({'error': 'Google ID does not match'}), 400
         elif password:
@@ -463,4 +463,193 @@ def delete_profile_image():
     except Exception as e:
         db.session.rollback()  # Realiza un rollback en la base de datos para evitar inconsistencias debido al error
         return jsonify({'error': str(e)}), 500  # Retorna un mensaje de error con el código de estado HTTP 500
+
+#-------------------------------------------------ENPOINT PARA LA GESTION DE POSTS-----------------------------------------------------------
+"""CREAR POSTS"""
+@api.route('/posts', methods=['POST'])
+@jwt_required()
+def create_post():
+    try:
+        data = request.form
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        current_user_id = get_jwt_identity()
+        new_post = Post(
+            message=data['message'],
+            author_id=current_user_id,
+            location=data['location'],
+            status=data['status']
+        )
+        db.session.add(new_post)
+        db.session.commit()
+
+        # Subir imágenes
+        files = request.files.getlist('images')
+        for file in files:
+            new_image = PostImage(post_id=new_post.id, img_data=file.read())
+            db.session.add(new_image)
+        db.session.commit()
+
+        return jsonify({'message': 'Post created successfully', 'post': new_post.serialize()}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+
+"""EDITAR POSTS"""
+@api.route('/posts/<int:post_id>', methods=['PUT'])
+@jwt_required()
+def edit_post(post_id):
+    try:
+        data = request.form
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+
+        current_user_id = get_jwt_identity()
+        post = Post.query.filter_by(id=post_id, author_id=current_user_id).first()
+        if not post:
+            return jsonify({'error': 'Post not found or not authorized'}), 404
+
+        post.message = data.get('message', post.message)
+        post.location = data.get('location', post.location)
+        post.status = data.get('status', post.status)
+
+        # Subir nuevas imágenes
+        files = request.files.getlist('images')
+        if files:
+            # Borrar las imágenes antiguas
+            for image in post.images:
+                db.session.delete(image)
+
+            # Subir nuevas imágenes
+            for file in files:
+                new_image = PostImage(post_id=post.id, img_data=file.read())
+                db.session.add(new_image)
+        
+        db.session.commit()
+        return jsonify({'message': 'Post updated successfully', 'post': post.serialize()}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+"""ELIMINAR POSTS"""
+@api.route('/posts/<int:post_id>', methods=['DELETE'])
+@jwt_required()
+def delete_post(post_id):
+    try:
+        current_user_id = get_jwt_identity()
+        post = Post.query.filter_by(id=post_id, author_id=current_user_id).first()
+        if not post:
+            return jsonify({'error': 'Post not found or not authorized'}), 404
+
+        post.status = 'deleted'  # Cambia el estado a 'deleted'
+        db.session.commit()
+        return jsonify({'message': 'Post marked as deleted successfully'}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+
+
+"""OBTENER POSTS DE USER"""
+@api.route('/user/posts', methods=['GET'])
+@jwt_required()
+def get_user_posts():
+    user_id = get_jwt_identity()
+    try:
+        # Filtrar publicaciones por autor y estado diferente de 'deleted'
+        posts = Post.query.filter_by(author_id=user_id).filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()
+        return jsonify([post.serialize() for post in posts]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+"""OBTENER TODOS LOS POSTS"""
+@api.route('/allposts', methods=['GET'])
+def get_all_posts():
+    try:
+        # Filtrar publicaciones por estado diferente de 'deleted'
+        posts = Post.query.filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()
+        return jsonify([post.serialize() for post in posts]), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+"""Dar y Quitar Likes"""
+@api.route('/post/<int:post_id>/like', methods=['POST'])
+@jwt_required()
+def toggle_like(post_id):
+    try:
+        user_id = get_jwt_identity()
+        post = Post.query.get(post_id)
+        if not post:
+            return jsonify({'error': 'Post not found'}), 404
+
+        like = Likes.query.filter_by(user_id=user_id, post_id=post_id).first()
+
+        if like:
+            db.session.delete(like)
+            db.session.commit()
+            message = 'Like removed'
+        else:
+            new_like = Likes(user_id=user_id, post_id=post_id)
+            db.session.add(new_like)
+            db.session.commit()
+            message = 'Like added'
+
+        # Obtener la lista de IDs de los usuarios que han dado like
+        liked_by_user = [like.user_id for like in Likes.query.filter_by(post_id=post_id).all()]
+
+        # Contar el número total de likes
+        likes_count = len(liked_by_user)
+
+        return jsonify({
+            'message': message,
+            'liked_by_user': liked_by_user,
+            'likes_count': likes_count
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+@api.route('/user/profile/<string:username>', methods=['GET'])
+@jwt_required()
+def get_other_user_profile(username):
+    try:
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+
+        posts = Post.query.filter_by(author_id=user.id).filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()
+        user_data = user.serialize()
+        user_posts = [post.serialize() for post in posts]
+
+        return jsonify({
+            'user': user_data,
+            'posts': user_posts
+        }), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
+"""
+Búsqueda de Usuarios
+"""
+@api.route('/users/search', methods=['GET'])
+def search_users():
+    query = request.args.get('query', '')
+    
+    users = User.query.filter(
+        db.or_(
+            User.name.ilike(f'%{query}%'),
+            User.last_name.ilike(f'%{query}%'),
+            User.username.ilike(f'%{query}%')
+        )
+    ).all()
+    
+    response = [user.serialize() for user in users]
+    return jsonify(response), 200
 

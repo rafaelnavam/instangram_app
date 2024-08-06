@@ -1,18 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { Navbar, Nav, NavDropdown, Container, Form, FormControl, InputGroup, Button, Dropdown } from 'react-bootstrap';
+import { Navbar, Container, Form, FormControl, InputGroup, Button, Dropdown, Modal } from 'react-bootstrap';
 import { Context } from '../../store/appContext';
 import styles from './Navbar.module.css';
-import logoRojo from '../../../img/logorojo.png';
-import profilePic from '../../../img/profile-circle-svgrepo-gray-com.png';
+import logoRojo from '../../../img/insta-svgrepo-com.png';
+import profilePic from '../../../img/insta-svgrepo-com.png';
 
 const NavigationBar = () => {
     const { store, actions } = useContext(Context);
     const [searchQuery, setSearchQuery] = useState('');
-    const [isCartOpen, setIsCartOpen] = useState(false);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-
+    const [showLoginMessage, setShowLoginMessage] = useState(false);
 
     const navigate = useNavigate();
     const { uploadedUserData } = store;
@@ -22,11 +21,6 @@ const NavigationBar = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 const result = await actions.validateToken(token);
-                //     // console.log(result);
-                //     if (!result.isAuthenticated) {
-                //         navigate('/');
-                //     }
-                // } else {
             }
         };
         checkAuthStatus();
@@ -37,15 +31,14 @@ const NavigationBar = () => {
         setIsAuthenticated(authStatus);
 
         if (authStatus) {
-            actions.loadUserData(); // Asegúrate de cargar los datos del usuario
+            actions.loadUserData();
         }
-
     }, []);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
             if (searchQuery) {
-                actions.searchProducts(searchQuery);
+                actions.searchUsers(searchQuery);
             }
         }, 300);
 
@@ -54,23 +47,24 @@ const NavigationBar = () => {
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
-        setIsDropdownOpen(true); // Mostrar el menú desplegable cuando el usuario empieza a buscar
+        setIsDropdownOpen(true);
     };
 
-    // const handleBuyNowClick = (product) => {
-    //     const categoryName = product.product_category.toLowerCase().replace(/ /g, "-");
-    //     const subcategoryName = product.product_subcategory.toLowerCase().replace(/ /g, "-");
-    //     const productName = product.product_name.toLowerCase().replace(/ /g, "-");
-    //     setIsDropdownOpen(false); // Cerrar el menú desplegable
-    //     navigate(`/${categoryName}/${subcategoryName}/${productName}`);
-    // };
-
-
+    const handleUserClick = (username) => {
+        if (!isAuthenticated) {
+            setShowLoginMessage(true);
+            setSearchQuery(''); // Borrar la búsqueda
+            setIsDropdownOpen(false); // Cerrar el dropdown
+        } else {
+            setIsDropdownOpen(false);
+            navigate(`/profile/${username}`);
+        }
+    };
 
     const handleLogout = async () => {
         await actions.closeSession();
         window.location.reload();
-        navigate('/Home');
+        navigate('/');
     };
 
     const profileImageUrl = uploadedUserData.profile_image_url || profilePic;
@@ -90,7 +84,7 @@ const NavigationBar = () => {
                         <InputGroup className={styles.searchGroup}>
                             <FormControl
                                 type="search"
-                                placeholder="¿Qué estás buscando?"
+                                placeholder="Buscar usuarios"
                                 className={`${styles.searchInput}`}
                                 aria-label="Search"
                                 value={searchQuery}
@@ -100,12 +94,12 @@ const NavigationBar = () => {
                         </InputGroup>
                         {searchQuery && store.searchResults.length > 0 && isDropdownOpen && (
                             <Dropdown.Menu show className={styles.searchResultsDropdown}>
-                                {store.searchResults.map(product => (
-                                    <Dropdown.Item key={product.product_id} onClick={() => handleBuyNowClick(product)} className={styles.searchResultItem}>
-                                        <img src={product.product_images[0]} alt={product.product_name} className={styles.searchResultImage} />
+                                {store.searchResults.map(user => (
+                                    <Dropdown.Item key={user.id} onClick={() => handleUserClick(user.username)} className={styles.searchResultItem}>
+                                        <img src={user.profile_image_url || profilePic} alt={user.username} className={styles.searchResultImage} />
                                         <div className={styles.searchResultDetails}>
-                                            <div className={styles.searchResultName}>{product.product_name}</div>
-                                            <div className={styles.searchResultPrice}>${product.product_price}</div>
+                                            <div className={styles.searchResultName}>{user.username}</div>
+                                            <div className={styles.searchResultFullName}>{user.name} {user.last_name}</div>
                                         </div>
                                     </Dropdown.Item>
                                 ))}
@@ -129,44 +123,23 @@ const NavigationBar = () => {
                                 Acceder / Registrarse
                             </Button>
                         )}
-                        {/* <div className={styles.cartContainer}>
-                            <i className={`fa fa-shopping-cart ${styles.cartIcon}`} onClick={toggleCart}></i>
-                            <span className={styles.cartCount}>{store.cartItems.length}</span>
-                        </div> */}
                     </div>
                 </Container>
             </Navbar>
-            {/* <Navbar expand="lg" className={styles.categoryNavbar}>
-                <Container className={styles.navContainer}>
-                    <Navbar.Toggle aria-controls="category-navbar-nav" className={styles.navbarToggler} />
-                    <Navbar.Collapse id="category-navbar-nav">
-                        <Nav className="me-auto">
-                            {store.categories.map(category => (
-                                <NavDropdown
-                                    key={category.category_id}
-                                    title={category.category_name}
-                                    id={`nav-dropdown-${category.category_id}`}
-                                    className={styles.navDropdown}
-                                >
-                                    {store.subcategories
-                                        .filter(sub => sub.category_id === category.category_id)
-                                        .map(sub => (
-                                            <NavDropdown.Item
-                                                key={sub.subcategory_id}
-                                                as={Link}
-                                                to={`/${category.category_name}/${sub.subcategory_name}`}
-                                                className={styles.navDropdownItem}
-                                            >
-                                                {sub.subcategory_name}
-                                            </NavDropdown.Item>
-                                        ))
-                                    }
-                                </NavDropdown>
-                            ))}
-                        </Nav>
-                    </Navbar.Collapse>
-                </Container>
-            </Navbar> */}
+            <Modal show={showLoginMessage} onHide={() => setShowLoginMessage(false)} centered>
+                <Modal.Header closeButton>
+                    <Modal.Title>Acción requerida</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>Debes iniciar sesión para ver el perfil de usuario.</Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={() => {
+                        setShowLoginMessage(false);
+                        navigate('/login-Register');
+                    }}>
+                        Iniciar sesión
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

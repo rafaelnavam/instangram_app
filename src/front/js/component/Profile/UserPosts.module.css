@@ -1,0 +1,148 @@
+.postsContainer {
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.postCard {
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.singlePostContainer {
+    text-align: center;
+}
+
+.singlePostCard {
+    margin: 0 auto;
+    max-width: 600px;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.authorInfo {
+    display: flex;
+    align-items: center;
+}
+
+.authorAvatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+}
+
+.authorName {
+    font-weight: bold;
+}
+
+.postLocation {
+    font-size: 0.875rem;
+    color: gray;
+}
+
+.postActions {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 10px 15px;
+}
+
+.postActions i {
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+
+.liked {
+    color: red;
+}
+
+.cardBody {
+    padding: 0;
+}
+
+.singlePostImage {
+    width: 100%;
+    height: auto;
+    max-height: 400px;
+}
+
+.carousel {
+    width: 100%;
+    height: auto;
+}
+
+.carouselImage {
+    max-height: 400px;
+    object-fit: cover;
+}
+
+.likes,
+.commentsLink,
+.date {
+    text-align: left;
+    padding: 0 15px;
+    margin: 5px 0;
+}
+
+.boldText {
+    font-weight: bold;
+}
+
+.date {
+    color: gray;
+    font-size: 0.875rem;
+}
+
+.backButton {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 20px;
+    background-color: transparent;
+    border: none;
+    color: black;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.backButton:hover {
+    background-color: #e2e2e2;
+}
+
+.otherPosts {
+    margin-top: 40px;
+}
+
+.postOptions {
+    margin-left: auto;
+}
+
+/* New styles to ensure consistent post dimensions */
+.card {
+    height: 100%;
+}
+
+.card-img-top {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.postCard .card {
+    height: 300px;
+    /* Consistent height for all posts */
+    overflow: hidden;
+    /* Ensure content does not overflow */
+}
+
+.postCard .card img {
+    height: 100%;
+    /* Ensure image fills the card */
+    object-fit: cover;
+    /* Ensure image covers the entire area */
+}

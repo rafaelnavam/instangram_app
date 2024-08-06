@@ -1,80 +1,33 @@
 .footer {
-    background-color: var(--color-light-gray);
+    background-color: #fafafa;
     padding: 20px 0;
     border-top: 1px solid #ddd;
+    text-align: center;
 }
 
-.title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: var(--color-navy);
-    margin-bottom: 20px;
-}
-
-
-.liActive:active {
-    background-color: #ccc;
-    /* color de fondo cuando se hace clic */
-    color: #333;
-    /* color de texto cuando se hace clic */
-    border-radius: 3px;
-    width: 50%;
-}
-
-.list {
-    list-style: none;
-    padding: 0;
-    line-height: 2;
-}
-
-.socialIcons,
-.paymentIcons {
+.footerLinks {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 10px;
+}
+
+.footerLinks a {
+    color: #8e8e8e;
+    font-size: 14px;
+    text-decoration: none;
+}
+
+.footerLinks a:hover {
+    text-decoration: underline;
+}
+
+.footerText {
+    color: #8e8e8e;
+    font-size: 12px;
     margin-top: 10px;
 }
 
-.socialIcon {
-    width: 50px;
-    height: 50px;
-}
-
-.icon {
-    width: 60px;
-    height: 60px;
-}
-
-.newsletterForm {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-@media (min-width: 768px) {
-    .newsletterForm {
-        flex-direction: row;
-    }
-}
-
-.newsletterInput {
-    border-radius: 20px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    flex-grow: 1;
-}
-
-.subscribeButton {
-    border-radius: 20px;
-    background-color: var(--color-orange-red);
-    border: none;
-    color: var(--color-white);
-    font-weight: bold;
-    padding: 0px 20px;
-    transition: background-color 0.3s;
-    margin-top: 0%;
-}
-
-.subscribeButton:hover {
-    background-color: #e03e00;
+.footerText span {
+    margin-left: 10px;
 }

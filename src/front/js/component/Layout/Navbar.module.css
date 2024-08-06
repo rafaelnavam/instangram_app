@@ -1,31 +1,22 @@
 .navbar {
-    background-color: var(--color-navy);
-    color: var(--color-white);
+    background-color: #fff;
+    /* Fondo blanco */
+    border-bottom: 1px solid #dbdbdb;
+    /* Línea de separación */
+    color: #262626;
     z-index: 1000;
 }
 
 .topNavbar {
     padding: 10px 0;
-    background-color: var(--color-navy);
+    background-color: #fff;
+    /* Fondo blanco */
     position: fixed;
     width: 100%;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1000;
-}
-
-.categoryNavbar {
-    background-color: rgba(255, 255, 255, 0.868);
-    padding: 5px 0;
-    font-size: 0.9rem;
-    border-top: 1px solid var(--color-light-gray);
-    position: fixed;
-    width: 100%;
-    top: 60px;
-    left: 0;
-    right: 0;
-    z-index: 999;
 }
 
 .navContainer {
@@ -41,7 +32,8 @@
 }
 
 .logo {
-    max-width: 70px;
+    max-width: 40px;
+    /* Tamaño del logo */
     height: auto;
 }
 
@@ -61,10 +53,12 @@
 }
 
 .searchInput {
-    border-radius: 20px !important;
+    border-radius: 10px !important;
+    /* Bordes redondeados */
     padding-left: 40px;
     width: 100%;
-    border: 1px solid var(--color-light-gray);
+    border: 1px solid #dbdbdb;
+    /* Borde gris claro */
 }
 
 .searchIcon {
@@ -72,7 +66,8 @@
     left: 10px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--color-navy);
+    color: #8e8e8e;
+    /* Color gris claro */
 }
 
 .searchResultsDropdown {
@@ -82,8 +77,10 @@
     right: 0;
     top: 100%;
     z-index: 1000;
-    background-color: var(--color-white);
-    border: 1px solid var(--color-light-gray);
+    background-color: #fff;
+    /* Fondo blanco */
+    border: 1px solid #dbdbdb;
+    /* Borde gris claro */
     border-radius: 0 0 10px 10px;
     max-height: 300px;
     overflow-y: auto;
@@ -111,8 +108,9 @@
     font-weight: bold;
 }
 
-.searchResultPrice {
-    color: var(--color-orange-red);
+.searchResultFullName {
+    color: #8e8e8e;
+    /* Color gris claro */
 }
 
 .actionsContainer {
@@ -122,71 +120,47 @@
 }
 
 .loginButton {
-    margin-right: 15px;
-    color: var(--color-white);
-    background-color: var(--color-navy);
-    border: 1px solid var(--color-lime);
+    color: #0095f6;
+    /* Azul de Instagram */
+    background-color: #fff;
+    /* Fondo blanco */
+    border: 1px solid #0095f6;
+    /* Borde azul */
     transition: background-color 0.3s, color 0.3s;
 }
 
 .loginButton:hover {
-    color: var(--color-navy);
-    background-color: var(--color-lime);
-    border-color: var(--color-lime);
-}
-
-.cartContainer {
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-.cartIcon {
-    color: var(--color-white);
-    font-size: 1.8rem;
-    cursor: pointer;
-}
-
-.cartCount {
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: var(--color-orange-red);
-    color: var(--color-white);
-    border-radius: 50%;
-    padding: 2px 5px;
-    font-size: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.navDropdown {
-    color: var(--color-white);
-}
-
-.navDropdownItem {
-    color: var(--color-navy);
+    color: #fff;
+    /* Blanco al pasar el cursor */
+    background-color: #0095f6;
+    /* Fondo azul */
+    border-color: #0095f6;
+    /* Borde azul */
 }
 
 .profileButton {
     display: flex;
     align-items: center;
     gap: 10px;
-    background-color: var(--color-navy);
-    border: 1px solid var(--color-lime);
-    color: var(--color-white);
+    background-color: #fff;
+    /* Fondo blanco */
+    border: 1px solid #dbdbdb;
+    /* Borde gris claro */
+    color: #262626;
+    /* Color negro */
     transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
     padding: 5px 10px;
     border-radius: 25px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-top: 0px;
 }
 
 .profileButton:hover {
-    color: var(--color-navy);
-    background-color: var(--color-lime);
-    border-color: var(--color-lime);
+    color: #0095f6;
+    /* Azul de Instagram */
+    background-color: #f8f8f8;
+    /* Gris claro al pasar el cursor */
+    border-color: #dbdbdb;
+    /* Borde gris claro */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
@@ -281,28 +255,8 @@
         margin: 0px 5px 0px 5px;
     }
 
-    .cartContainer {
-        margin-top: 10px;
-    }
-
     .searchGroup {
         width: 100%;
-    }
-
-    .mainContent {
-        margin-top: 128px;
-    }
-}
-
-@media (max-width: 768px) {
-    .categoryNavbar .navContainer {
-        justify-content: center;
-    }
-
-    .navDropdown {
-        flex: 1 1 auto;
-        text-align: center;
-        white-space: nowrap;
     }
 
     .mainContent {

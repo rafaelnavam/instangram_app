@@ -8,7 +8,6 @@ const getState = ({ getStore, getActions, setStore }) => {
       uploadedUserData: [],
       isAuthenticatedMessage: null,
       loginError: [],
-      dataRole: [],
       dataUser: {
         // Objeto que almacena los datos del usuario
         email: "", // Correo electrónico del usuario (inicializado como cadena vacía)
@@ -19,6 +18,10 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       creationState: null,
       createError: [],
+
+      posts: [],
+      allposts: [],
+      searchResults: [],
     },
     actions: {
       validateToken: async (token) => {
@@ -145,7 +148,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
           // Convertimos la respuesta a formato JSON para extraer los datos
           let data = await response.json();
-          //	console.log(data)
+          // console.log(data)
           let store = getStore(); // Se obtiene el estado actual del almacén
           setStore({ ...store, uploadedUserData: data }); // Se actualiza el estado con los datos de usuario recuperados
 
@@ -276,7 +279,7 @@ const getState = ({ getStore, getActions, setStore }) => {
         // Obtenemos el token del almacenamiento local
         let myToken = localStorage.getItem("token");
         // console.log(myToken);
-        console.log(userData);
+        // console.log(userData);
         // Construimos la URL para la solicitud
         let url = `${process.env.BACKEND_URL}/api/user`;
         try {
@@ -290,7 +293,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             body: JSON.stringify(userData),
           });
           let data = await response.json();
-          console.log(data);
+          // console.log(data);
           if (response.ok) {
             // Asumiendo que quieres actualizar el store aquí
             return { success: true, data: data };
@@ -322,7 +325,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             body: JSON.stringify({ is_active: isActive }),
           });
           const data = await response.json();
-          console.log(data);
+          // console.log(data);
 
           if (response.ok) {
             return { success: true, data: data };
@@ -421,6 +424,196 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
         } catch (error) {
           return { success: false, message: error.message }; // Retornar un objeto con éxito falso y el mensaje de error
+        }
+      },
+
+      //---------------------------------------------------------FUNCION PARA LA GESTION DE POSTS--------------------------------------------------------------------------
+
+      createPost: async (postData) => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(`${process.env.BACKEND_URL}/api/posts`, {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: postData, // No se usa JSON.stringify
+          });
+          const data = await response.json();
+          if (response.ok) {
+            return { success: true, post: data.post };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      editPost: async (postId, postData) => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/posts/${postId}`,
+            {
+              method: "PUT",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+              body: postData,
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            return { success: true, post: data.post };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      deletePost: async (postId) => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/posts/${postId}`,
+            {
+              method: "DELETE",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            return { success: true, message: data.message };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      getUserPosts: async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/user/posts`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            setStore({ posts: data });
+            return { success: true, posts: data };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      getAllPosts: async () => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/allposts`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            setStore({ allposts: data });
+            return { success: true, posts: data };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      toggleLike: async (postId) => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/post/${postId}/like`,
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            return {
+              success: true,
+              liked_by_user: data.liked_by_user, // Lista de IDs de los usuarios que han dado like
+              likes_count: data.likes_count, // Número total de likes
+              message: data.message,
+            };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      getOtherUserProfile: async (username) => {
+        try {
+          const token = localStorage.getItem("token");
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/user/profile/${username}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          const data = await response.json();
+          if (response.ok) {
+            return { success: true, user: data.user, posts: data.posts };
+          } else {
+            return { success: false, error: data.error };
+          }
+        } catch (error) {
+          return { success: false, error: error.message };
+        }
+      },
+
+      searchUsers: async (query) => {
+        try {
+          const response = await fetch(
+            `${process.env.BACKEND_URL}/api/users/search?query=${query}`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            }
+          );
+          if (!response.ok) throw new Error("Failed to fetch users");
+          const data = await response.json();
+          setStore({ searchResults: data });
+        } catch (error) {
+          console.error("Error searching users:", error);
         }
       },
     },

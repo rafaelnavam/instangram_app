@@ -1,0 +1,188 @@
+.userProfile {
+    padding: 20px;
+    background: #fafafa;
+}
+
+.profileHeader {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profilePicContainer {
+    cursor: pointer;
+}
+
+.profilePic {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #dbdbdb;
+}
+
+.username {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #262626;
+}
+
+.profileStats {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+    color: #262626;
+}
+
+.profileStats span {
+    font-size: 1rem;
+}
+
+.profileActions {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.followButton,
+.messageButton {
+    font-size: 0.875rem;
+    border-radius: 4px;
+}
+
+.profileInfo {
+    margin-top: 20px;
+    color: #262626;
+}
+
+.profileInfo h3 {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.postsContainer {
+    margin-top: 20px;
+}
+
+.postCard {
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.singlePostContainer {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #000;
+    margin-bottom: 20px;
+}
+
+.backButton {
+    background-color: #0095f6;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.backButton:hover {
+    background-color: #007bb5;
+}
+
+.singlePostCard {
+    margin-top: 20px;
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dbdbdb;
+}
+
+.authorInfo {
+    display: flex;
+    align-items: center;
+}
+
+.authorAvatar {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+
+.authorName {
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.postLocation {
+    font-size: 0.875rem;
+    color: #8e8e8e;
+}
+
+.cardBody {
+    padding: 20px;
+}
+
+.carousel {
+    margin-bottom: 20px;
+}
+
+.carouselImage {
+    width: 100%;
+    height: auto;
+}
+
+.singlePostImage {
+    width: 100%;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.postActions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.fa-heart {
+    cursor: pointer;
+}
+
+.liked {
+    color: #e74c3c;
+}
+
+.likes {
+    font-size: 1rem;
+    color: #262626;
+}
+
+.boldText {
+    font-weight: bold;
+}
+
+.date {
+    font-size: 0.875rem;
+    color: #8e8e8e;
+}
+
+.otherPosts {
+    margin-top: 20px;
+}
+
+.postImage {
+    width: 100%;
+    height: 300px;
+    /* Fixed height for consistent dimensions */
+    object-fit: cover;
+    /* Maintain aspect ratio and cover the container */
+}
