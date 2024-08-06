@@ -3,6 +3,8 @@ import { Context } from '../store/appContext.js';
 import styles from './AllPosts.module.css';
 import { Container, Card, Image, Carousel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import UserPic from '../../../front/img/profile-circle-svgrepo-com.png'
+
 
 const AllPosts = () => {
     const { actions, store } = useContext(Context);
@@ -69,7 +71,7 @@ const AllPosts = () => {
                         <Card.Header className={styles.cardHeader}>
                             <div className={styles.authorInfo}>
                                 <Image
-                                    src={post.author.profile_image_url}
+                                    src={post.author.profile_image_url || UserPic}
                                     roundedCircle
                                     className={styles.authorAvatar}
                                     onClick={() => handleProfileClick(post.author.username)}
@@ -103,7 +105,7 @@ const AllPosts = () => {
                             ) : (
                                 <Image src={post.images[0]} className={styles.postImage} />
                             )}
-                            <Card.Text>{post.message}</Card.Text>
+                            <Card.Text className={styles.likes}>{post.message}</Card.Text>
                             <div className={styles.postActions}>
                                 <div className={styles.likeContainer}>
                                     <i

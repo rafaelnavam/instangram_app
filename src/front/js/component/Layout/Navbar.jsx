@@ -4,7 +4,7 @@ import { Navbar, Container, Form, FormControl, InputGroup, Button, Dropdown, Mod
 import { Context } from '../../store/appContext';
 import styles from './Navbar.module.css';
 import logoRojo from '../../../img/insta-svgrepo-com.png';
-import profilePic from '../../../img/insta-svgrepo-com.png';
+import profilePic from '../../../img/profile-circle-svgrepo-com.png';
 
 const NavigationBar = () => {
     const { store, actions } = useContext(Context);
@@ -24,7 +24,7 @@ const NavigationBar = () => {
             }
         };
         checkAuthStatus();
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         const authStatus = JSON.parse(localStorage.getItem("isAuthenticated"));
@@ -33,7 +33,7 @@ const NavigationBar = () => {
         if (authStatus) {
             actions.loadUserData();
         }
-    }, []);
+    }, [navigate]);
 
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {

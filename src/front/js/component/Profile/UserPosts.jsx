@@ -2,6 +2,8 @@ import React, { useEffect, useState, useContext } from 'react';
 import { Context } from '../../store/appContext';
 import styles from './UserPosts.module.css';
 import { Container, Row, Col, Card, Image, Carousel, Dropdown, DropdownButton } from 'react-bootstrap';
+import UserPic from '../../../img/profile-circle-svgrepo-com.png'
+
 
 const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
     const { actions, store } = useContext(Context);
@@ -101,7 +103,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
                     <Card className={styles.singlePostCard}>
                         <Card.Header className={styles.cardHeader}>
                             <div className={styles.authorInfo}>
-                                <Image src={store.uploadedUserData.profile_image_url} roundedCircle className={styles.authorAvatar} />
+                                <Image src={store.uploadedUserData.profile_image_url || UserPic} roundedCircle className={styles.authorAvatar} />
                                 <div>
                                     <div className={styles.authorName}>Author Name</div>
                                     <div className={styles.postLocation}>
