@@ -2,12 +2,14 @@ import React, { useState, useContext, useEffect } from "react";
 import { Context } from '../../store/appContext.js';
 import { useNavigate } from "react-router-dom";
 import { Container, Row, Col, Image, Button } from 'react-bootstrap';
+import UserPic from '../../../img/profile-circle-svgrepo-com.png'
 
 import PersonalInfo from './PersonalInfo.jsx';
 import styles from './UserProfile.module.css';
 import UserPosts from "./UserPosts.jsx";
 import ProfileImageUploadEco from "./ProfileImageUpload.jsx";
 import CreatePostForm from "./CreatePostForm.jsx";
+import EditUserProfileEco from "./EditUserProfile.jsx";
 
 const UserProfile = () => {
     const { store, actions } = useContext(Context);
@@ -22,10 +24,15 @@ const UserProfile = () => {
     }, []);
 
     useEffect(() => {
-        const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
-        if (!isAuthenticated) {
-            navigate("/");
-        }
+        const verificarAutenticacion = async () => {
+            const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
+            if (!isAuthenticated) {
+                navigate("/");
+            } else {
+                await actions.loadUserData();
+            }
+        };
+        verificarAutenticacion();
     }, [navigate]);
 
     const profileImageUrl = uploadedUserData.profile_image_url;
@@ -47,10 +54,13 @@ const UserProfile = () => {
         <Container className={styles.userProfile}>
             <Row className={styles.profileHeader}>
                 <Col xs={3} onClick={handleImageClick} className={styles.profilePicContainer}>
-                    <Image src={profileImageUrl || "default-profile-pic-url"} roundedCircle className={styles.profilePic} />
+                    <Image src={profileImageUrl || UserPic} roundedCircle className={styles.profilePic} />
                 </Col>
                 <Col xs={9}>
-                    <h2 className={styles.username}>{uploadedUserData.username}</h2>
+                    <div className={styles.userInfo}>
+                        <h2 className={styles.username}>{uploadedUserData.username}</h2>
+                        <EditUserProfileEco />
+                    </div>
                     <div className={styles.profileStats}>
                         <span><strong>{store.posts.length}</strong> publicaciones</span>
                         {/* <span><strong>3030</strong> seguidores</span>

@@ -1,6 +1,7 @@
 .editButton {
     background-color: transparent;
-    color: var(--color-lime);
+    color: #cacaca;
+    /* Color primario similar al de Instagram */
     border: none;
     text-align: center;
     font-size: 16px;
@@ -11,34 +12,40 @@
 }
 
 .editButton:hover {
-    color: var(--color-white);
-    background-color: var(--color-light-gray);
+    color: #ffffff;
+    background-color: #b2dffc;
+    /* Color más claro al pasar el mouse */
 }
 
 .editButton:active {
-    background-color: var(--color-navy);
-    color: var(--color-orange-red);
+    background-color: rgba(0, 0, 0, .2);
+    /* Color más oscuro al hacer clic */
+    color: #ff4500;
+    /* Color de resaltar al hacer clic */
 }
 
 .modal {
-    color: #383838;
-    /* Charcoal */
+    color: #262626;
+    /* Color de texto oscuro */
 }
 
 .modalHeader {
-    background-color: var(--color-navy);
+    background-color: #dbdbdb82;
+    /* Fondo oscuro para el encabezado */
 }
 
 .modalTitle {
-    color: var(--color-white);
+    color: #ffffff;
 }
 
 .modalBody {
-    background-color: var(--color-light-gray);
+    background-color: #fafafa;
+    /* Fondo claro para el cuerpo del modal */
 }
 
 .modalFooter {
-    background-color: var(--color-navy);
+    background-color: #dbdbdb82;
+    /* Fondo oscuro para el pie del modal */
 }
 
 .closeButton,
@@ -48,18 +55,21 @@
 }
 
 .closeButton {
-    background-color: var(--color-orange-red);
-    color: var(--color-white);
+    background-color: #e74c3c8a;
+    /* Botón de cerrar en rojo */
+    color: #ffffff;
 }
 
 .saveButton {
-    background-color: var(--color-lime);
-    color: var(--color-white);
+    background-color: rgba(0, 0, 0, 0.1);
+    /* Botón de guardar en azul */
+    color: #ffffff;
 }
 
 .form-control {
     margin-bottom: 10px;
-    border: 1px solid var(--color-navy);
+    border: 1px solid #00376b;
+    /* Borde oscuro para el control del formulario */
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -77,7 +87,8 @@
 }
 
 .updateMessage {
-    color: var(--color-navy);
+    color: #00376b;
+    /* Texto de mensaje de actualización en azul oscuro */
     font-size: 1.2em;
     text-align: center;
 }
