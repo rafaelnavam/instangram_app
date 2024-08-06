@@ -41,22 +41,10 @@ $ pipenv run downgrade
 
 ### Backend Populate Table Users
 
-To insert test users in the database execute the following command:
+To insert test users, with publication and likes in the database, execute the following command:
 
 ```sh
-$ flask insert-test-users 5
-```
-
-And you will see the following message:
-
-```
-  Creating test users
-  test_user1@test.com created.
-  test_user2@test.com created.
-  test_user3@test.com created.
-  test_user4@test.com created.
-  test_user5@test.com created.
-  Users created successfully!
+$ flask insert-test-data 10 20 50
 ```
 
 ### **Important note for the database and the data inside it**
