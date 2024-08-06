@@ -6,30 +6,10 @@ import requests
 
 fake = Faker()
 
-"""
-COMANDO PARA REINICIR MIGRACIONES:
-
-rm -R -f ./migrations &&
-pipenv run init &&
-dropdb -h localhost -U postgres facebook_app_db || true &&
-createdb -h localhost -U postgres facebook_app_db || true &&
-psql -h localhost postgres -U facebook_app_db -c 'CREATE EXTENSION unaccent;' || true &&
-pipenv run migrate &&
-pipenv run upgrade
-
-cambia >>>>> facebook_app_db <<<<<< por el nombre e tu base de datos
-
-LUEGO DE BORRAR LA BASE DE DATOS CORRE EL ENTORNO VIRTUAL:
-pipenv shell
-
-SI DA ERROR VERIFICA SI TIENES pipenv install flask-migrate INSTALADO. SI NO, INSTALALO.
-pipenv install Flask
-
-"""
-
 """ 
-This is an example command "insert-test-data" that you can run from the command line
-by typing: $  flask insert-test-data 10 20 50
+This is an example command "insert-test-users" that you can run from the command line
+by typing: $ flask insert-test-users 5
+Note: 5 is the number of users to add
 """
 def setup_commands(app):
 

@@ -3,8 +3,6 @@ import { Context } from '../../store/appContext.js';
 import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Col, Image, Button, Card, Carousel } from 'react-bootstrap';
 import styles from './ProfileOtherUser.module.css';
-import UserPic from '../../../img/profile-circle-svgrepo-com.png'
-
 
 const ProfileOtherUser = () => {
     const { store, actions } = useContext(Context);
@@ -28,7 +26,7 @@ const ProfileOtherUser = () => {
             setUserId(user_id);
 
         }
-    }, [navigate, selectedPost]);
+    }, [navigate]);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
@@ -91,7 +89,7 @@ const ProfileOtherUser = () => {
         <Container className={styles.userProfile}>
             <Row className={styles.profileHeader}>
                 <Col xs={3} className={styles.profilePicContainer}>
-                    <Image src={userData.profile_image_url || UserPic} roundedCircle className={styles.profilePic} />
+                    <Image src={userData.profile_image_url || "default-profile-pic-url"} roundedCircle className={styles.profilePic} />
                 </Col>
                 <Col xs={9}>
                     <h2 className={styles.username}>{userData.username}</h2>
@@ -118,7 +116,7 @@ const ProfileOtherUser = () => {
                         <Card className={styles.singlePostCard}>
                             <Card.Header className={styles.cardHeader}>
                                 <div className={styles.authorInfo}>
-                                    <Image src={userData.profile_image_url || UserPic} roundedCircle className={styles.authorAvatar} />
+                                    <Image src={userData.profile_image_url} roundedCircle className={styles.authorAvatar} />
                                     <div>
                                         <div className={styles.authorName}>{userData.username}</div>
                                         <div className={styles.postLocation}>
@@ -157,6 +155,7 @@ const ProfileOtherUser = () => {
                             </Card.Body>
                         </Card>
                         <div className={styles.otherPosts}>
+                            <h3>Otras Publicaciones</h3>
                             <Row>
                                 {userPosts.filter(post => post.id !== selectedPost.id).map((post) => (
                                     <Col key={post.id} xs={12} md={4} className={styles.postCard} onClick={() => handlePostClick(post)}>

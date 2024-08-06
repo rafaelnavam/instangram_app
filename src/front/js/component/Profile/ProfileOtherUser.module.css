@@ -93,8 +93,7 @@
 }
 
 .singlePostCard {
-    max-width: 500px;
-    margin: auto;
+    margin-top: 20px;
 }
 
 .cardHeader {
@@ -138,12 +137,12 @@
 
 .carouselImage {
     width: 100%;
-    max-height: 450px;
+    height: auto;
 }
 
 .singlePostImage {
     width: 100%;
-    max-height: 400px;
+    height: auto;
     margin-bottom: 20px;
 }
 
@@ -152,7 +151,6 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 10px;
-    font-size: 30px;
 }
 
 .fa-heart {
@@ -183,7 +181,7 @@
 
 .postImage {
     width: 100%;
-    max-height: 300px;
+    height: 300px;
     /* Fixed height for consistent dimensions */
     object-fit: cover;
     /* Maintain aspect ratio and cover the container */
