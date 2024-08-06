@@ -1,0 +1,265 @@
+.navbar {
+    background-color: #fff;
+    /* Fondo blanco */
+    border-bottom: 1px solid #dbdbdb;
+    /* Línea de separación */
+    color: #262626;
+    z-index: 1000;
+}
+
+.topNavbar {
+    padding: 10px 0;
+    background-color: #fff;
+    /* Fondo blanco */
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.navContainer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    max-width: 40px;
+    /* Tamaño del logo */
+    height: auto;
+}
+
+.logoAnimation {
+    animation: logoAnimation 1s ease-in-out;
+}
+
+.searchContainer {
+    flex-grow: 1;
+    margin: 0 20px;
+    position: relative;
+}
+
+.searchGroup {
+    position: relative;
+    width: 100%;
+}
+
+.searchInput {
+    border-radius: 10px !important;
+    /* Bordes redondeados */
+    padding-left: 40px;
+    width: 100%;
+    border: 1px solid #dbdbdb;
+    /* Borde gris claro */
+}
+
+.searchIcon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #8e8e8e;
+    /* Color gris claro */
+}
+
+.searchResultsDropdown {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    right: 0;
+    top: 100%;
+    z-index: 1000;
+    background-color: #fff;
+    /* Fondo blanco */
+    border: 1px solid #dbdbdb;
+    /* Borde gris claro */
+    border-radius: 0 0 10px 10px;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.searchResultItem {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+}
+
+.searchResultImage {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.searchResultDetails {
+    display: flex;
+    flex-direction: column;
+}
+
+.searchResultName {
+    font-weight: bold;
+}
+
+.searchResultFullName {
+    color: #8e8e8e;
+    /* Color gris claro */
+}
+
+.actionsContainer {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.loginButton {
+    color: #0095f6;
+    /* Azul de Instagram */
+    background-color: #fff;
+    /* Fondo blanco */
+    border: 1px solid #0095f6;
+    /* Borde azul */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.loginButton:hover {
+    color: #fff;
+    /* Blanco al pasar el cursor */
+    background-color: #0095f6;
+    /* Fondo azul */
+    border-color: #0095f6;
+    /* Borde azul */
+}
+
+.profileButton {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: #fff;
+    /* Fondo blanco */
+    border: 1px solid #dbdbdb;
+    /* Borde gris claro */
+    color: #262626;
+    /* Color negro */
+    transition: background-color 0.3s, color 0.3s, box-shadow 0.3s;
+    padding: 5px 10px;
+    border-radius: 25px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.profileButton:hover {
+    color: #0095f6;
+    /* Azul de Instagram */
+    background-color: #f8f8f8;
+    /* Gris claro al pasar el cursor */
+    border-color: #dbdbdb;
+    /* Borde gris claro */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.profileImage {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.mainContent {
+    margin-top: 108px;
+}
+
+@media (max-width: 768px) {
+    .profileButton {
+        padding: 3px 8px;
+    }
+
+    .profileImage {
+        width: 25px;
+        height: 25px;
+    }
+
+    .loginButton {
+        font-size: small;
+    }
+
+    .mainContent {
+        margin-top: 128px;
+    }
+}
+
+@media (max-width: 576px) {
+    .profileButton {
+        padding: 2px 6px;
+    }
+
+    .profileImage {
+        width: 20px;
+        height: 20px;
+    }
+
+    .loginButton {
+        font-size: x-small;
+    }
+
+    .mainContent {
+        margin-top: 128px;
+    }
+}
+
+@keyframes logoAnimation {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.navbar-toggler {
+    margin-left: auto;
+    margin-right: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@media (max-width: 992px) {
+    .searchContainer {
+        margin: 10px 0;
+        flex-grow: 0;
+    }
+
+    .navContainer {
+        flex-direction: row;
+    }
+
+    .topNavbar {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: stretch;
+        justify-content: space-between;
+    }
+
+    .loginButton {
+        font-size: xx-small;
+        margin: 0px 5px 0px 5px;
+    }
+
+    .searchGroup {
+        width: 100%;
+    }
+
+    .mainContent {
+        margin-top: 128px;
+    }
+}
