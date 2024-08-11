@@ -26,6 +26,19 @@ services:
                 name: postgresql-trapezoidal-42170
                 property: connectionString
 
+#Esta sección asegura que cualquier ruta en tu aplicación 
+#que no coincida con un archivo físico sea redirigida a index.html.
+- type: static
+    name: frontend-service
+    env: static
+    region: ohio
+    buildCommand: "yarn build"
+    publishPath: ./public
+    redirects:
+      - source: "/*"
+        destination: "/index.html"
+        statusCode: 200
+
 databases: # Render PostgreSQL database
     - name: postgresql-trapezoidal-42170
       region: ohio
