@@ -58,7 +58,7 @@ module.exports = merge(common, {
 
     // Configura el directorio estático desde donde el servidor servirá archivos.
     static: {
-      directory: path.resolve(__dirname, "dist"), // Sirve desde el directorio correcto
+      directory: path.resolve(__dirname, "public"), // Sirve desde el directorio correcto
     },
 
     // Configura el cliente del servidor para usar la URL de WebSocket especificada.
