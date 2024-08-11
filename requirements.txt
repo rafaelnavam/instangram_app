@@ -40,7 +40,6 @@ pillow==10.4.0
 prompt_toolkit==3.0.47
 psycopg2-binary==2.9.9
 pycparser==2.22
-pygraphviz==1.13
 PyJWT==2.9.0
 pyOpenSSL==24.2.1
 PyPDF2==3.0.1
