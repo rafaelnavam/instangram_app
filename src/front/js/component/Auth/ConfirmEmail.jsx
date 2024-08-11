@@ -13,6 +13,8 @@ function ConfirmarEmail() {
   const token = query.get('token');
 
   useEffect(() => {
+    console.log("ConfirmarEmail component mounted");
+
     if (token) {
       fetch(`${process.env.BACKEND_URL}/api/confirm/${token}`, { method: 'POST' })
         .then(response => response.json())
