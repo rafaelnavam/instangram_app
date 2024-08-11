@@ -15,7 +15,6 @@ click-plugins==1.1.1
 click-repl==0.3.0
 cloudinary==1.41.0
 cryptography==43.0.0
-eralchemy2==1.4.1
 Faker==26.1.0
 Flask==3.0.3
 Flask-Admin==1.6.1
