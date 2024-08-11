@@ -1,8 +1,10 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { Context } from '../store/appContext.js';
-import styles from './AllPosts.module.css';
 import { Container, Card, Image, Carousel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+import styles from './AllPosts.module.css';
 import UserPic from '../../../front/img/profile-circle-svgrepo-com.png'
 
 
@@ -62,6 +64,39 @@ const AllPosts = () => {
     const handleProfileClick = (username) => {
         navigate(`/profile/${username}`);
     };
+
+    if (!store.allposts.length) {
+        return (
+            <Container className={styles.postsContainer}>
+                <div className={styles.scrollContainer}>
+                    {[1, 2, 3, 4, 5].map((_, index) => (
+                        <Card key={index} className={styles.postCard}>
+                            <Card.Header className={styles.cardHeader}>
+                                <div className={styles.authorInfo}>
+                                    <Skeleton height={40} width={40} />
+                                    <div>
+                                        <Skeleton height={20} width={100} />
+                                        <Skeleton height={20} width={100} />
+                                    </div>
+                                </div>
+                            </Card.Header>
+                            <Card.Body className={styles.cardBody}>
+                                <Skeleton height={200} width={300} />
+                                <Skeleton height={20} width={200} />
+                                <div className={styles.postActions}>
+                                    <Skeleton height={20} width={20} />
+                                    <Skeleton height={20} width={20} />
+                                    <Skeleton height={20} width={20} />
+                                </div>
+                                <Skeleton height={20} width={200} />
+                                <Skeleton height={20} width={200} />
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+            </Container>
+        );
+    }
 
     return (
         <Container className={styles.postsContainer}>

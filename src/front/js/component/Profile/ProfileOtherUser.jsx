@@ -2,6 +2,9 @@ import React, { useState, useContext, useEffect } from "react";
 import { Context } from '../../store/appContext.js';
 import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Col, Image, Button, Card, Carousel } from 'react-bootstrap';
+import Skeleton from 'react-loading-skeleton';
+import 'react-loading-skeleton/dist/skeleton.css';
+
 import styles from './ProfileOtherUser.module.css';
 import UserPic from '../../../img/profile-circle-svgrepo-com.png'
 
@@ -83,8 +86,32 @@ const ProfileOtherUser = () => {
         setSelectedPost(null);
     };
 
-    if (!userData) {
-        return <div>Loading...</div>;
+    if (!userData || !userPosts.length) {
+        return (
+            <Container className={styles.userProfile}>
+                <Row className={styles.profileHeader}>
+                    <Col xs={3} className={styles.profilePicContainer}>
+                        <Skeleton height={100} width={100} />
+                    </Col>
+                    <Col xs={9}>
+                        <Skeleton height={30} width={200} />
+                        <Skeleton height={20} width={150} />
+                    </Col>
+                </Row>
+                <Row>
+                    <Col xs={12} className={styles.profileInfo}>
+                        <Skeleton height={20} width={200} />
+                    </Col>
+                </Row>
+                <Row className={styles.postsContainer}>
+                    {[1, 2, 3].map((_, index) => (
+                        <Col key={index} xs={12} md={4} className={styles.postCard}>
+                            <Skeleton height={200} width={200} />
+                        </Col>
+                    ))}
+                </Row>
+            </Container>
+        );
     }
 
     return (

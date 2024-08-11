@@ -4,8 +4,6 @@ import ScrollToTop from "./component/scrollToTop";
 import { BackendURL } from "./component/backendURL";
 import injectContext from "./store/appContext";
 
-import { Home } from "./pages/home.js";
-
 import styles2 from "./component/Layout/Navbar.module.css";
 import Navbar from "./component/Layout/Navbar.jsx";
 import Footer from "./component/Layout/Footer.jsx";
