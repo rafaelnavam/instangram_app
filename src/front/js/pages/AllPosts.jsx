@@ -12,6 +12,7 @@ const AllPosts = () => {
     const { actions, store } = useContext(Context);
     const [userId, setUserId] = useState(null);
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [showLoginMessageRedirec, setShowLoginMessageRedirec] = useState(false);
     const [showLoginMessage, setShowLoginMessage] = useState(false);
     const [carouselIndex, setCarouselIndex] = useState({});
     const navigate = useNavigate();
@@ -38,7 +39,7 @@ const AllPosts = () => {
     const handleLikeClick = async (post) => {
         if (!isAuthenticated) {
             setShowLoginMessage(true);
-            setTimeout(() => setShowLoginMessage(false), 3000);
+            setTimeout(() => setShowLoginMessage(false), 4000);
             return;
         }
 
@@ -62,6 +63,11 @@ const AllPosts = () => {
     };
 
     const handleProfileClick = (username) => {
+        if (!isAuthenticated) {
+            setShowLoginMessageRedirec(true);
+            setTimeout(() => setShowLoginMessageRedirec(false), 4000);
+            return;
+        }
         navigate(`/profile/${username}`);
     };
 
@@ -111,6 +117,9 @@ const AllPosts = () => {
                                     className={styles.authorAvatar}
                                     onClick={() => handleProfileClick(post.author.username)}
                                 />
+                                {showLoginMessageRedirec && (
+                                    <div className={styles.loginMessageRedirec}>Debes iniciar sesión para ver el perfil</div>
+                                )}
                                 <div>
                                     <div className={styles.authorName} onClick={() => handleProfileClick(post.author.username)}>{post.author.username}</div>
                                     <div className={styles.postLocation}>

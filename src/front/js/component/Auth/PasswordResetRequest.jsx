@@ -31,8 +31,8 @@ const PasswordResetRequest = () => {
                 setShowModal(true);
 
                 setTimeout(() => {
-                    navigate('/Login-Register');
-                }, 2000);
+                    navigate('/login-Register');
+                }, 3000);
             } else {
                 setError(result.error);
                 setMessage('');

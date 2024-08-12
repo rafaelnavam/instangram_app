@@ -68,7 +68,7 @@ const ResetPassword = () => {
                 setShowModal(true);
 
                 setTimeout(() => {
-                    navigate('/Login');
+                    navigate('/login-register');
                 }, 1500);
 
             } else {

@@ -7,6 +7,7 @@ import injectContext from "./store/appContext";
 import styles2 from "./component/Layout/Navbar.module.css";
 import Navbar from "./component/Layout/Navbar.jsx";
 import Footer from "./component/Layout/Footer.jsx";
+import NotFound from "./component/Layout/NotFoundPage.jsx";
 
 import LoginReister from "./component/Auth/LoginRegister.jsx";
 import PasswordResetRequest from "./component/Auth/PasswordResetRequest.jsx";
@@ -40,7 +41,7 @@ const Layout = () => {
             <Route element={<ConfirmarEmail />} path="/ConfirmEmail" />
             <Route element={<ProfileOtherUser />} path="/profile/:username" />
 
-            <Route element={<h1>Not found!</h1>} />
+            <Route element={<NotFound />} path="*" />
           </Routes>
           <Footer />
         </ScrollToTop>
