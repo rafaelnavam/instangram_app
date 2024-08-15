@@ -82,69 +82,65 @@ def get_user_by_email():
 #------------------CREACION DE USUARIO----------------------------------------------------------------------------------
 
 """CREACION DE USUARIO CON GOOGLE ACCOUNT"""
-@api.route('/signup/user', methods=['POST'])  # Define una ruta de la API para registrar nuevos usuarios, permitiendo solo el método POST.
-def create_new_normal_user():
-    # Define la función que manejará las solicitudes a esta ruta.
+@api.route('/singup/user', methods=['POST'])  # Define una ruta para crear un nuevo usuario normal, utilizando el método POST.
+def create_new_normal_user():  # Define la función para manejar la creación de un nuevo usuario.
+    try:  # Intenta ejecutar el código a continuación.
+        data = request.json  # Obtiene los datos JSON enviados en la solicitud.
+        if not data:  # Si no se proporcionan datos, devuelve un error.
+            return jsonify({'error': 'No data provided'}), 400  # Devuelve un mensaje de error indicando que no se proporcionaron datos.
 
-    try:
-        data = request.json  # Obtiene los datos en formato JSON enviados en la solicitud.
-        if not data:
-            return jsonify({'error': 'No data provided'}), 400  # Si no se proporcionan datos, responde con un error 400.
+        if 'email' not in data:  # Verifica si el campo 'email' está presente en los datos.
+            return jsonify({'error': 'Email is required'}), 400  # Si no está presente, devuelve un error indicando que se requiere un correo electrónico.
 
-        if 'email' not in data:
-            return jsonify({'error': 'Email is required'}), 400  # Si no se proporciona el email, responde con un error 400.
+        if 'username' not in data:  # Verifica si el campo 'username' está presente en los datos.
+            return jsonify({'error': 'Username is required'}), 400  # Si no está presente, devuelve un error indicando que se requiere un nombre de usuario.
 
-        if 'username' not in data:
-            return jsonify({'error': 'Username is required'}), 400  # Si no se proporciona el nombre de usuario, responde con un error 400.
+        if 'googleId' in data:  # Si se proporciona un 'googleId', significa que el usuario se está registrando a través de Google.
+            # Registro a través de Google, no es necesario verificar el correo
+            password_hash = None  # No se requiere una contraseña cuando se utiliza Google para registrarse.
+            user = User.query.filter_by(email=data['email']).first()  # Busca si ya existe un usuario con el correo electrónico proporcionado.
+            if user:  # Si ya existe un usuario con ese correo electrónico, devuelve un error.
+                return jsonify({'error': 'Email already exists.'}), 409  # Devuelve un error indicando que el correo electrónico ya existe.
 
-        if 'googleId' in data:
-            # Si se proporciona un googleId, se registra a través de Google, no es necesario verificar el correo.
-
-            password_hash = None  # No se necesita un hash de contraseña para el registro con Google.
-            user = User.query.filter_by(email=data['email']).first()  # Busca si ya existe un usuario con ese email.
-            if user:
-                return jsonify({'error': 'Email already exists.'}), 409  # Si el email ya existe, responde con un error 409.
-
-            new_user = User(
-                email=data['email'],  # Establece el email del nuevo usuario.
-                google_id=data['googleId'],  # Establece el googleId del nuevo usuario.
-                password=password_hash,  # No se establece una contraseña.
-                username=data['username'],  # Establece el nombre de usuario.
-                name=data.get('name'),  # Establece el nombre (opcional).
-                last_name=data.get('last_name'),  # Establece el apellido (opcional).
+            new_user = User(  # Crea una nueva instancia de User con los datos proporcionados.
+                email=data['email'],  # Asigna el correo electrónico.
+                google_id=data['googleId'],  # Asigna el ID de Google.
+                password=password_hash,  # No asigna ninguna contraseña.
+                username=data['username'],  # Asigna el nombre de usuario.
+                name=data.get('name'),  # Asigna el nombre si está presente en los datos.
+                last_name=data.get('last_name'),  # Asigna el apellido si está presente en los datos.
                 is_active=True  # Activa la cuenta directamente.
             )
 
             db.session.add(new_user)  # Añade el nuevo usuario a la sesión de la base de datos.
             db.session.commit()  # Confirma los cambios en la base de datos.
-            return jsonify({'message': 'User created successfully', 'create': True}), 201  # Responde con un mensaje de éxito.
+            return jsonify({'message': 'User created successfully', 'create': True}), 201  # Devuelve un mensaje de éxito y un código de estado 201.
 
-        if 'password' not in data:
-            return jsonify({'error': 'Password is required'}), 400  # Si no se proporciona la contraseña, responde con un error 400.
+        if 'password' not in data:  # Si no se proporciona una contraseña y el usuario no se está registrando con Google, devuelve un error.
+            return jsonify({'error': 'Password is required'}), 400  # Devuelve un error indicando que se requiere una contraseña.
 
-        existing_user = User.query.filter_by(email=data['email']).first()  # Busca si ya existe un usuario con ese email.
-        if existing_user:
-            return jsonify({'error': 'Email already exists.'}), 409  # Si el email ya existe, responde con un error 409.
+        existing_user = User.query.filter_by(email=data['email']).first()  # Busca si ya existe un usuario con el correo electrónico proporcionado.
+        if existing_user:  # Si ya existe un usuario con ese correo electrónico, devuelve un error.
+            return jsonify({'error': 'Email already exists.'}), 409  # Devuelve un error indicando que el correo electrónico ya existe.
+        existing_username = User.query.filter_by(username=data['username']).first()  # Busca si ya existe un usuario con el nombre de usuario proporcionado.
+        if existing_username:  # Si ya existe un usuario con ese nombre de usuario, devuelve un error.
+            return jsonify({'error': 'Username already exists.'}), 409  # Devuelve un error indicando que el nombre de usuario ya existe.
 
-        existing_username = User.query.filter_by(username=data['username']).first()  # Busca si ya existe un usuario con ese nombre de usuario.
-        if existing_username:  
-            return jsonify({'error': 'Username already exists.'}), 409  # Si el nombre de usuario ya existe, responde con un error 409.
+        password_hash = generate_password_hash(data['password']).decode('utf-8')  # Genera un hash de la contraseña proporcionada.
 
-        password_hash = generate_password_hash(data['password']).decode('utf-8')  # Genera un hash de la contraseña.
-
-        new_user = User(
-            email=data['email'],  # Establece el email del nuevo usuario.
-            password=password_hash,  # Establece el hash de la contraseña.
-            username=data['username'],  # Establece el nombre de usuario.
-            name=data.get('name'),  # Establece el nombre (opcional).
-            last_name=data.get('last_name')  # Establece el apellido (opcional).
+        new_user = User(  # Crea una nueva instancia de User con los datos proporcionados.
+            email=data['email'],  # Asigna el correo electrónico.
+            password=password_hash,  # Asigna la contraseña hasheada.
+            username=data['username'],  # Asigna el nombre de usuario.
+            name=data.get('name'),  # Asigna el nombre si está presente en los datos.
+            last_name=data.get('last_name')  # Asigna el apellido si está presente en los datos.
         )
 
-        token = generate_confirmation_token_email(new_user.email)  # Genera un token para la confirmación del correo.
+        token = generate_confirmation_token_email(new_user.email)  # Genera un token para confirmar el correo electrónico.
         BASE_URL_FRONT = os.getenv('FRONTEND_URL')  # Obtiene la URL del frontend desde las variables de entorno.
-        confirm_url = url_for('api.confirm_email', token=token, _external=True)  # Genera la URL de confirmación del correo.
-        confirm_url = f"{BASE_URL_FRONT}/ConfirmEmail?token={token}"  # Combina la URL base con la URL de confirmación.
-        html = f"""
+        confirm_url = url_for('api.confirm_email', token=token, _external=True)  # Genera la URL para confirmar el correo electrónico.
+        confirm_url = f"{BASE_URL_FRONT}/ConfirmEmail?token={token}"  # Construye la URL completa para la confirmación del correo.
+        html = f"""  # Define el contenido HTML del correo electrónico de confirmación.
         <!DOCTYPE html>
         <html>
         <head>
@@ -156,17 +152,17 @@ def create_new_normal_user():
                 <a href="{confirm_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Activate Account</a>
             </div>
         </body>
-        </html>"""  # HTML del correo electrónico de confirmación.
+        </html>"""
 
-        send_email('Confirm Your Email', new_user.email, html)  # Envía el correo electrónico de confirmación al usuario.
+        send_email('Confirm Your Email', new_user.email, html)  # Envía el correo electrónico de confirmación.
 
         db.session.add(new_user)  # Añade el nuevo usuario a la sesión de la base de datos.
         db.session.commit()  # Confirma los cambios en la base de datos.
 
-        return jsonify({'message': 'Please confirm your email address to complete the registration', 'create': True}), 201  # Responde solicitando la confirmación del correo.
+        return jsonify({'message': 'Please confirm your email address to complete the registration', 'create': True}), 201  # Devuelve un mensaje indicando que se ha enviado un correo de confirmación y un código de estado 201.
 
-    except Exception as e:
-        return jsonify({'error': 'Error in user creation: ' + str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+    except Exception as e:  # Captura cualquier excepción que ocurra durante la ejecución del código.
+        return jsonify({'error': 'Error in user creation: ' + str(e)}), 500  # Devuelve un mensaje de error con el detalle de la excepción y un código de estado 500.
 
     
 #------------------VERIFICAR SI EL USUARIO EXISTE----------------------------------------------------------------------------------

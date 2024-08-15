@@ -51,7 +51,7 @@ const AllPosts = () => {
         };
 
         fetchPosts();
-    }, [actions]);
+    }, [navigate]);
 
     useEffect(() => {
         const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
