@@ -1,46 +1,82 @@
 import React, { useState, useContext, useEffect } from "react";
+// Importa React junto con los hooks useState, useContext y useEffect para gestionar el estado y los efectos secundarios.
+
 import { Context } from '../../store/appContext.js';
+// Importa el contexto global de la aplicación.
+
 import { useNavigate, useParams } from "react-router-dom";
+// Importa los hooks useNavigate y useParams de react-router-dom para la navegación y obtención de parámetros de la URL.
+
 import { Container, Row, Col, Image, Button, Card, Carousel } from 'react-bootstrap';
+// Importa componentes de React Bootstrap para la construcción de la interfaz de usuario: Container, Row, Col, Image, Button, Card, Carousel.
+
 import Skeleton from 'react-loading-skeleton';
+// Importa el componente Skeleton para mostrar un efecto de carga.
+
 import 'react-loading-skeleton/dist/skeleton.css';
+// Importa los estilos CSS del componente Skeleton.
 
 import styles from './ProfileOtherUser.module.css';
-import UserPic from '../../../img/profile-circle-svgrepo-com.png'
+// Importa los estilos CSS específicos para el componente ProfileOtherUser.
 
+import UserPic from '../../../img/profile-circle-svgrepo-com.png';
+// Importa una imagen predeterminada para el perfil del usuario.
 
 const ProfileOtherUser = () => {
     const { store, actions } = useContext(Context);
-    const { username } = useParams();
-    const navigate = useNavigate();
-    const [userData, setUserData] = useState(null);
-    const [userPosts, setUserPosts] = useState([]);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [showLoginMessage, setShowLoginMessage] = useState(false);
-    const [selectedPost, setSelectedPost] = useState(null);
-    const [userId, setUserId] = useState(null);
+    // Usa el contexto global para acceder al store y las acciones de la aplicación.
 
+    const { username } = useParams();
+    // Obtiene el parámetro `username` de la URL usando useParams.
+
+    const navigate = useNavigate();
+    // Inicializa el hook useNavigate para redirigir al usuario a diferentes rutas.
+
+    const [userData, setUserData] = useState(null);
+    // Estado para almacenar los datos del usuario cuyo perfil se está visualizando.
+
+    const [userPosts, setUserPosts] = useState([]);
+    // Estado para almacenar las publicaciones del usuario.
+
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Estado para verificar si el usuario actual está autenticado.
+
+    const [showLoginMessage, setShowLoginMessage] = useState(false);
+    // Estado para manejar la visibilidad del mensaje que solicita iniciar sesión.
+
+    const [selectedPost, setSelectedPost] = useState(null);
+    // Estado para manejar la publicación seleccionada para mostrar en detalle.
+
+    const [userId, setUserId] = useState(null);
+    // Estado para almacenar el ID del usuario actual.
 
     useEffect(() => {
         const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
         setIsAuthenticated(isAuthenticated);
+        // Verifica si el usuario está autenticado obteniendo el estado desde localStorage.
+
         if (!isAuthenticated) {
             navigate("/");
+            // Si el usuario no está autenticado, redirige a la página de inicio.
         } else {
             const user_id = JSON.parse(localStorage.getItem("user_id"));
             setUserId(user_id);
-
+            // Si el usuario está autenticado, obtiene y almacena su ID.
         }
     }, [navigate, selectedPost]);
 
     useEffect(() => {
         const fetchUserProfile = async () => {
             const response = await actions.getOtherUserProfile(username);
+            // Llama a la acción para obtener el perfil y las publicaciones del usuario.
+
             if (response.success) {
                 setUserData(response.user);
                 setUserPosts(response.posts);
+                // Si la solicitud es exitosa, almacena los datos del usuario y sus publicaciones en los estados correspondientes.
             } else {
                 console.error(response.error);
+                // Si hay un error, lo muestra en la consola.
             }
         };
         fetchUserProfile();
@@ -51,9 +87,12 @@ const ProfileOtherUser = () => {
             setShowLoginMessage(true);
             setTimeout(() => setShowLoginMessage(false), 3000);
             return;
+            // Si el usuario no está autenticado, muestra un mensaje solicitando iniciar sesión y no permite dar "me gusta".
         }
 
         const response = await actions.toggleLike(post.id);
+        // Llama a la acción para alternar el "me gusta" en una publicación.
+
         if (response.success) {
             setUserPosts((prevPosts) =>
                 prevPosts.map((p) =>
@@ -62,12 +101,15 @@ const ProfileOtherUser = () => {
                         : p
                 )
             );
+            // Actualiza el estado de las publicaciones para reflejar el cambio en los "me gusta".
+
             if (selectedPost && selectedPost.id === post.id) {
                 setSelectedPost({
                     ...selectedPost,
                     liked_by_user: response.liked_by_user,
                     likes_count: response.likes_count
                 });
+                // Si la publicación seleccionada es la misma que se ha actualizado, también actualiza su estado.
             }
         }
     };
@@ -76,14 +118,17 @@ const ProfileOtherUser = () => {
         if (likedBy.length === 0) return "alguien";
         const randomUser = likedBy[Math.floor(Math.random() * likedBy.length)];
         return store.users.find(user => user.id === randomUser)?.username || "alguien";
+        // Devuelve un nombre de usuario aleatorio de la lista de usuarios que han dado "me gusta" a la publicación.
     };
 
     const handlePostClick = (post) => {
         setSelectedPost(post);
+        // Establece la publicación seleccionada para mostrar en detalle.
     };
 
     const handleBackClick = () => {
         setSelectedPost(null);
+        // Restablece la vista de publicaciones para mostrar todas las publicaciones en lugar de una sola.
     };
 
     if (!userData || !userPosts.length) {

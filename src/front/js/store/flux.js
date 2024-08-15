@@ -9,12 +9,11 @@ const getState = ({ getStore, getActions, setStore }) => {
       isAuthenticatedMessage: null,
       loginError: [],
       dataUser: {
-        // Objeto que almacena los datos del usuario
-        email: "", // Correo electrónico del usuario (inicializado como cadena vacía)
-        name: "", // Nombre del usuario (inicializado como cadena vacía)
-        last_name: "", // Apellido del usuario (inicializado como cadena vacía)
-        username: "", // Nombre de usuario del usuario (inicializado como cadena vacía)
-        password: "", // Contraseña del usuario (inicializada como cadena vacía)
+        email: "",
+        name: "",
+        last_name: "",
+        username: "",
+        password: "",
       },
       creationState: null,
       createError: [],
@@ -26,37 +25,40 @@ const getState = ({ getStore, getActions, setStore }) => {
     actions: {
       validateToken: async (token) => {
         try {
-          const url = `${process.env.BACKEND_URL}/api/validate-token`;
+          const url = `${process.env.BACKEND_URL}/api/validate-token`; // Construye la URL para la API que valida el token.
 
           const response = await fetch(url, {
-            method: "GET",
+            // Realiza una solicitud HTTP a la API.
+            method: "GET", // Especifica el método HTTP como GET.
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
             },
           });
 
           if (response.ok) {
-            const data = await response.json();
+            // Verifica si la respuesta HTTP fue exitosa (código 200-299).
+            const data = await response.json(); // Convierte la respuesta en formato JSON.
             if (data.user) {
+              // Comprueba si los datos del usuario están presentes en la respuesta.
               setStore({
-                isAuthenticated: true,
-                uploadedUserData: data.user, // Guarda los datos del usuario en el estado global
+                isAuthenticated: true, // Actualiza el estado global para indicar que el usuario está autenticado.
+                uploadedUserData: data.user, // Guarda los datos del usuario en el estado global.
               });
-              return { isAuthenticated: true };
+              return { isAuthenticated: true }; // Retorna un objeto indicando que la autenticación fue exitosa.
             } else {
-              console.error("Token inválido o usuario no encontrado");
-              getActions().closeSession();
-              return { isAuthenticated: false };
+              console.error("Token inválido o usuario no encontrado"); // Muestra un error si el token es inválido o el usuario no fue encontrado.
+              getActions().closeSession(); // Llama a la función para cerrar la sesión del usuario.
+              return { isAuthenticated: false }; // Retorna un objeto indicando que la autenticación falló.
             }
           } else {
-            console.error("Error validando el token", await response.text());
-            getActions().closeSession();
-            return { isAuthenticated: false };
+            console.error("Error validando el token", await response.text()); // Muestra un error si la validación del token falla.
+            getActions().closeSession(); // Llama a la función para cerrar la sesión del usuario.
+            return { isAuthenticated: false }; // Retorna un objeto indicando que la autenticación falló.
           }
         } catch (error) {
-          console.error("Error en la función validateToken:", error);
-          getActions().closeSession();
-          return { isAuthenticated: false };
+          console.error("Error en la función validateToken:", error); // Muestra un error si ocurre una excepción durante la ejecución de la función.
+          getActions().closeSession(); // Llama a la función para cerrar la sesión del usuario.
+          return { isAuthenticated: false }; // Retorna un objeto indicando que la autenticación falló.
         }
       },
 
@@ -182,99 +184,112 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
       //---------------------------------------------------------FUNCION PARA CREAR USER--------------------------------------------------------------------------
       createUser: async (dataUser) => {
+        // Define una función asíncrona para crear un nuevo usuario.
         try {
-          const url = `${process.env.BACKEND_URL}/api/singup/user`;
+          const url = `${process.env.BACKEND_URL}/api/singup/user`; // Construye la URL para la API que maneja el registro de usuarios.
 
           let response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(dataUser),
+            // Realiza una solicitud HTTP POST a la API.
+            method: "POST", // Especifica el método HTTP como POST.
+            headers: { "Content-Type": "application/json" }, // Define el tipo de contenido de la solicitud como JSON.
+            body: JSON.stringify(dataUser), // Convierte los datos del usuario a una cadena JSON y los incluye en el cuerpo de la solicitud.
           });
 
-          let data = await response.json();
+          let data = await response.json(); // Convierte la respuesta de la API a formato JSON.
 
           if (response.ok) {
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
             setStore({
-              ...getStore(),
-              creationState: { create: true, message: data.message },
+              ...getStore(), // Mantiene el estado actual del store.
+              creationState: { create: true, message: data.message }, // Actualiza el estado indicando que la creación fue exitosa y guarda el mensaje de la API.
             });
-            return true; // Indica que la creación fue exitosa
+            return true; // Retorna true para indicar que la creación del usuario fue exitosa.
           } else {
             setStore({
-              ...getStore(),
-              creationState: { create: false, error: data.error },
+              ...getStore(), // Mantiene el estado actual del store.
+              creationState: { create: false, error: data.error }, // Actualiza el estado indicando que hubo un error en la creación y guarda el mensaje de error.
             });
-            return false; // Indica que hubo un error
+            return false; // Retorna false para indicar que hubo un error en la creación del usuario.
           }
         } catch (error) {
-          // console.error("Registration Error:", error);
           setStore({
-            ...getStore(),
+            ...getStore(), // Mantiene el estado actual del store.
             creationState: {
-              create: false,
-              error: "Registration failed due to an exception.",
+              create: false, // Indica que la creación falló debido a una excepción.
+              error: "Registration failed due to an exception.", // Establece un mensaje de error genérico.
             },
           });
-          return false;
+          return false; // Retorna false para indicar que hubo un error en la creación del usuario.
         }
       },
-      //--------- creacion se usuario con google---------------------------------------
+
+      //--------- creacion se usuario con google--------------------------------------------------------------------------------------------------------------------------------
+
       checkIfUserExists: async (email) => {
+        // Define una función asíncrona para verificar si un usuario existe basado en su email.
         try {
-          const url = `${process.env.BACKEND_URL}/api/user/exists`;
+          const url = `${process.env.BACKEND_URL}/api/user/exists`; // Construye la URL para la API que verifica la existencia de un usuario.
           let response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
+            // Realiza una solicitud HTTP POST a la API.
+            method: "POST", // Especifica el método HTTP como POST.
+            headers: { "Content-Type": "application/json" }, // Define el tipo de contenido de la solicitud como JSON.
+            body: JSON.stringify({ email }), // Convierte el email a una cadena JSON y lo incluye en el cuerpo de la solicitud.
           });
 
-          let data = await response.json();
-          return data.exists;
+          let data = await response.json(); // Convierte la respuesta de la API a formato JSON.
+          return data.exists; // Retorna un valor booleano indicando si el usuario existe.
         } catch (error) {
-          console.error("Error checking if user exists: ", error);
-          return false;
+          console.error("Error checking if user exists: ", error); // Muestra un error en caso de que ocurra durante la ejecución de la función.
+          return false; // Retorna false si ocurre un error, indicando que no se pudo verificar la existencia del usuario.
         }
       },
+      //--------- login de usuario con google--------------------------------------------------------------------------------------------------------------------------------
 
       loginUserWithGoogle: async (email, googleId) => {
+        // Define una función asíncrona para iniciar sesión de un usuario utilizando Google.
         try {
-          const url = `${process.env.BACKEND_URL}/api/token`;
+          const url = `${process.env.BACKEND_URL}/api/token`; // Construye la URL para la API que maneja la autenticación del usuario.
           let response = await fetch(url, {
-            method: "POST",
+            // Realiza una solicitud HTTP POST a la API.
+            method: "POST", // Especifica el método HTTP como POST.
             headers: {
-              "Content-Type": "application/json",
+              "Content-Type": "application/json", // Define el tipo de contenido de la solicitud como JSON.
             },
-            body: JSON.stringify({ email, googleId }),
+            body: JSON.stringify({ email, googleId }), // Convierte el email y googleId a una cadena JSON y lo incluye en el cuerpo de la solicitud.
           });
 
-          let data = await response.json();
+          let data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (data.access_token) {
-            localStorage.setItem("token", data.access_token);
-            localStorage.setItem("isAuthenticated", JSON.stringify(true));
-            localStorage.setItem("user_id", data.user_id);
+            // Comprueba si la respuesta contiene un token de acceso.
+            localStorage.setItem("token", data.access_token); // Guarda el token de acceso en el almacenamiento local.
+            localStorage.setItem("isAuthenticated", JSON.stringify(true)); // Guarda el estado de autenticación en el almacenamiento local.
+            localStorage.setItem("user_id", data.user_id); // Guarda el ID del usuario en el almacenamiento local.
 
-            let store = getStore();
+            let store = getStore(); // Obtiene el estado global actual.
             setStore({
-              ...store,
-              isAuthenticated: true,
-              isAuthenticatedMessage: true,
-              loginError: null,
-              dataRole: data.role,
+              ...store, // Mantiene el estado actual del store.
+              isAuthenticated: true, // Actualiza el estado indicando que el usuario está autenticado.
+              isAuthenticatedMessage: true, // Establece un mensaje indicando autenticación exitosa.
+              loginError: null, // Borra cualquier error de inicio de sesión anterior.
+              dataRole: data.role, // Guarda el rol del usuario en el estado.
             });
-            return true;
+            return true; // Retorna true para indicar que la autenticación fue exitosa.
           } else {
             setStore({
-              isAuthenticated: false,
-              isAuthenticatedMessage: false,
-              loginError: data.error,
-              dataRole: null,
+              isAuthenticated: false, // Actualiza el estado indicando que el usuario no está autenticado.
+              isAuthenticatedMessage: false, // Establece un mensaje indicando que la autenticación falló.
+              loginError: data.error, // Guarda el mensaje de error en el estado.
+              dataRole: null, // Limpia cualquier rol de usuario previo.
             });
-            return false;
+            return false; // Retorna false para indicar que la autenticación falló.
           }
         } catch (error) {
-          throw new Error(`Error login: ${error.message}`);
+          throw new Error(`Error login: ${error.message}`); // Lanza una excepción si ocurre un error durante la ejecución de la función.
         }
       },
+
+      //--------- edicion de usuario--------------------------------------------------------------------------------------------------------------------------------
+
       updateUserData: async (userData) => {
         // Obtenemos el token del almacenamiento local
         let myToken = localStorage.getItem("token");
@@ -313,35 +328,40 @@ const getState = ({ getStore, getActions, setStore }) => {
       //---------------------------------------------------------FUNCION PARA DESACTIVAR CUENTA DE USUARIO--------------------------------------------------------------------------
 
       updateUserActivation: async (userId, isActive) => {
-        const token = localStorage.getItem("token");
-        const url = `${process.env.BACKEND_URL}/api/user/${userId}/activate`;
+        // Define una función asíncrona para actualizar el estado de activación de un usuario.
+        const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
+        const url = `${process.env.BACKEND_URL}/api/user/${userId}/activate`; // Construye la URL para la API que maneja la activación/desactivación del usuario.
         try {
           const response = await fetch(url, {
-            method: "PUT",
+            // Realiza una solicitud HTTP PUT a la API.
+            method: "PUT", // Especifica el método HTTP como PUT.
             headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
+              "Content-Type": "application/json", // Define el tipo de contenido de la solicitud como JSON.
             },
-            body: JSON.stringify({ is_active: isActive }),
+            body: JSON.stringify({ is_active: isActive }), // Convierte el estado de activación a una cadena JSON y lo incluye en el cuerpo de la solicitud.
           });
-          const data = await response.json();
-          // console.log(data);
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
 
           if (response.ok) {
-            return { success: true, data: data };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            return { success: true, data: data }; // Retorna un objeto indicando que la actualización fue exitosa, junto con los datos de la respuesta.
           } else {
             return {
-              success: false,
-              error: data.error || "Unknown error occurred.",
+              success: false, // Indica que la actualización falló.
+              error: data.error || "Unknown error occurred.", // Retorna un mensaje de error, usando el error de la API si está disponible o un mensaje genérico.
             };
           }
         } catch (error) {
-          console.error("Error updating user activation status:", error);
-          return { success: false, error: error.message };
+          console.error("Error updating user activation status:", error); // Muestra un error si ocurre durante la ejecución de la función.
+          return { success: false, error: error.message }; // Retorna un objeto indicando que la actualización falló debido a una excepción.
         }
       },
+
       //---------------------------------------------------------FUNCIONES PARA CARGAR FOTO DE PERFIL USER--------------------------------------------------------------------------
+
       // Función para cargar la foto de perfil
+
       uploadProfileImage: async (formData) => {
         // Obtener el token de autenticación del almacenamiento local
         const myToken = localStorage.getItem("token");
@@ -371,6 +391,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       // Función para actualizar la foto de perfil
+
       updateProfileImage: async (formData) => {
         // Obtener el token de autenticación del almacenamiento local
         const myToken = localStorage.getItem("token");
@@ -400,6 +421,7 @@ const getState = ({ getStore, getActions, setStore }) => {
       },
 
       // Función para eliminar la foto de perfil
+
       deleteProfileImage: async () => {
         // Obtener el token de autenticación del almacenamiento local
         const myToken = localStorage.getItem("token");
@@ -429,191 +451,218 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       //---------------------------------------------------------FUNCION PARA LA GESTION DE POSTS--------------------------------------------------------------------------
 
+      // función asíncrona para crear una nueva publicación.
       createPost: async (postData) => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(`${process.env.BACKEND_URL}/api/posts`, {
-            method: "POST",
+            // Realiza una solicitud HTTP POST a la API.
+            method: "POST", // Especifica el método HTTP como POST.
             headers: {
-              Authorization: `Bearer ${token}`,
+              Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
             },
-            body: postData, // No se usa JSON.stringify
+            body: postData, // Envía los datos de la publicación en el cuerpo de la solicitud, no se usa JSON.stringify porque se está manejando un FormData.
           });
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
-            return { success: true, post: data.post };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            return { success: true, post: data.post }; // Retorna un objeto indicando que la creación fue exitosa y devuelve los datos de la publicación.
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando que la creación falló y devuelve el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      // función asíncrona para editar una publicación existente.
       editPost: async (postId, postData) => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/posts/${postId}`,
             {
-              method: "PUT",
+              // Realiza una solicitud HTTP PUT a la API para editar la publicación.
+              method: "PUT", // Especifica el método HTTP como PUT.
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
               },
-              body: postData,
+              body: postData, // Envía los datos de la publicación en el cuerpo de la solicitud, no se usa JSON.stringify porque se está manejando un FormData.
             }
           );
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
-            return { success: true, post: data.post };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            return { success: true, post: data.post }; // Retorna un objeto indicando que la edición fue exitosa y devuelve los datos de la publicación.
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando que la edición falló y devuelve el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      // función asíncrona para eliminar una publicación existente.
       deletePost: async (postId) => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/posts/${postId}`,
             {
-              method: "DELETE",
+              // Realiza una solicitud HTTP DELETE a la API para eliminar la publicación.
+              method: "DELETE", // Especifica el método HTTP como DELETE.
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
               },
             }
           );
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
-            return { success: true, message: data.message };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            return { success: true, message: data.message }; // Retorna un objeto indicando que la eliminación fue exitosa y devuelve un mensaje de confirmación.
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando que la eliminación falló y devuelve el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      // función asíncrona para obtener las publicaciones del usuario autenticado.
       getUserPosts: async () => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/user/posts`,
             {
-              method: "GET",
+              // Realiza una solicitud HTTP GET a la API para obtener las publicaciones del usuario.
+              method: "GET", // Especifica el método HTTP como GET.
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
               },
             }
           );
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
-            setStore({ posts: data });
-            return { success: true, posts: data };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            setStore({ posts: data }); // Almacena las publicaciones en el estado global.
+            return { success: true, posts: data }; // Retorna un objeto indicando éxito y las publicaciones obtenidas.
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando fallo y el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      // función asíncrona para obtener todas las publicaciones.
       getAllPosts: async () => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/allposts`,
             {
-              method: "GET",
+              // Realiza una solicitud HTTP GET a la API para obtener todas las publicaciones.
+              method: "GET", // Especifica el método HTTP como GET.
               headers: {
-                Authorization: `Bearer ${token}`,
+                Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
               },
             }
           );
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
-            setStore({ allposts: data });
-            return { success: true, posts: data };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            setStore({ allposts: data }); // Almacena todas las publicaciones en el estado global.
+            return { success: true, posts: data }; // Retorna un objeto indicando éxito y las publicaciones obtenidas.
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando fallo y el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      //---------------------------------------------------------FUNCION PARA LOS LIKES--------------------------------------------------------------------------
+
+      // función asíncrona para alternar el like de una publicación.
       toggleLike: async (postId) => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/post/${postId}/like`,
             {
-              method: "POST",
+              // Realiza una solicitud HTTP POST a la API para dar o quitar like a una publicación.
+              method: "POST", // Especifica el método HTTP como POST.
               headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
+                "Content-Type": "application/json", // Define el tipo de contenido de la solicitud como JSON.
               },
             }
           );
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
             return {
-              success: true,
-              liked_by_user: data.liked_by_user, // Lista de IDs de los usuarios que han dado like
-              likes_count: data.likes_count, // Número total de likes
-              message: data.message,
+              success: true, // Indica que la operación fue exitosa.
+              liked_by_user: data.liked_by_user, // Lista de IDs de los usuarios que han dado like.
+              likes_count: data.likes_count, // Número total de likes.
+              message: data.message, // Mensaje de confirmación.
             };
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando fallo y el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      //---------------------------------------------------------FUNCIONES PARA BUSCAR PERFILES--------------------------------------------------------------------------
+
+      // función asíncrona para obtener el perfil de otro usuario por su nombre de usuario.
       getOtherUserProfile: async (username) => {
         try {
-          const token = localStorage.getItem("token");
+          const token = localStorage.getItem("token"); // Recupera el token JWT almacenado localmente.
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/user/profile/${username}`,
             {
-              method: "GET",
+              // Realiza una solicitud HTTP GET a la API para obtener el perfil de otro usuario.
+              method: "GET", // Especifica el método HTTP como GET.
               headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`, // Incluye el token JWT en la cabecera de autorización.
+                "Content-Type": "application/json", // Define el tipo de contenido de la solicitud como JSON.
               },
             }
           );
-          const data = await response.json();
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           if (response.ok) {
-            return { success: true, user: data.user, posts: data.posts };
+            // Comprueba si la respuesta HTTP indica éxito (código 200-299).
+            return { success: true, user: data.user, posts: data.posts }; // Retorna un objeto indicando éxito, el perfil del usuario y sus publicaciones.
           } else {
-            return { success: false, error: data.error };
+            return { success: false, error: data.error }; // Retorna un objeto indicando fallo y el mensaje de error.
           }
         } catch (error) {
-          return { success: false, error: error.message };
+          return { success: false, error: error.message }; // Maneja cualquier excepción que ocurra y retorna un objeto indicando el error.
         }
       },
 
+      // función asíncrona para buscar usuarios por un término de búsqueda.
       searchUsers: async (query) => {
         try {
           const response = await fetch(
             `${process.env.BACKEND_URL}/api/users/search?query=${query}`,
             {
-              method: "GET",
+              // Realiza una solicitud HTTP GET a la API para buscar usuarios.
+              method: "GET", // Especifica el método HTTP como GET.
               headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/json", // Define el tipo de contenido de la solicitud como JSON.
               },
             }
           );
-          if (!response.ok) throw new Error("Failed to fetch users");
-          const data = await response.json();
-          setStore({ searchResults: data });
+          if (!response.ok) throw new Error("Failed to fetch users"); // Lanza un error si la respuesta no es exitosa.
+          const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
+          setStore({ searchResults: data }); // Almacena los resultados de la búsqueda en el estado global.
         } catch (error) {
-          console.error("Error searching users:", error);
+          console.error("Error searching users:", error); // Muestra un error si ocurre durante la ejecución de la función.
         }
       },
     },

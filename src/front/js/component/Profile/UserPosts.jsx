@@ -1,24 +1,44 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { Context } from '../../store/appContext';
-import styles from './UserPosts.module.css';
-import { Container, Row, Col, Card, Image, Carousel, Dropdown, DropdownButton } from 'react-bootstrap';
-import UserPic from '../../../img/profile-circle-svgrepo-com.png'
+// Importa React junto con los hooks useEffect, useState y useContext para gestionar efectos secundarios, estado y contexto.
 
+import { Context } from '../../store/appContext';
+// Importa el contexto global de la aplicación.
+
+import styles from './UserPosts.module.css';
+// Importa los estilos CSS específicos para el componente UserPosts.
+
+import { Container, Row, Col, Card, Image, Carousel, Dropdown, DropdownButton } from 'react-bootstrap';
+// Importa componentes de React Bootstrap para construir la interfaz de usuario: Container, Row, Col, Card, Image, Carousel, Dropdown, DropdownButton.
+
+import UserPic from '../../../img/profile-circle-svgrepo-com.png';
+// Importa una imagen predeterminada para el perfil del usuario.
 
 const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
+    // Componente funcional que recibe dos props: setEditingPost y setShowCreatePostForm para manejar la edición de publicaciones y la visualización del formulario de creación.
+
     const { actions, store } = useContext(Context);
+    // Usa el contexto global para acceder a las acciones y el store de la aplicación.
+
     const [selectedPost, setSelectedPost] = useState(null);
+    // Estado para manejar la publicación seleccionada que se mostrará en detalle.
+
     const [userId, setUserId] = useState(null);
+    // Estado para almacenar el ID del usuario autenticado.
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Estado para verificar si el usuario está autenticado.
+
     const [showLoginMessage, setShowLoginMessage] = useState(false);
+    // Estado para manejar la visibilidad del mensaje que solicita iniciar sesión.
 
     useEffect(() => {
         const fetchPosts = async () => {
             await actions.getUserPosts();
+            // Llama a la acción para obtener las publicaciones del usuario.
         };
 
         fetchPosts();
-    }, []);
+    }, [actions]);
 
     useEffect(() => {
         const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
@@ -26,18 +46,22 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
             const user_id = JSON.parse(localStorage.getItem("user_id"));
             setUserId(user_id);
             setIsAuthenticated(true);
+            // Si el usuario está autenticado, obtiene su ID y actualiza el estado de autenticación.
         } else {
             setIsAuthenticated(false);
+            // Si el usuario no está autenticado, actualiza el estado de autenticación a falso.
         }
     }, []);
 
     const handlePostClick = (post) => {
         setSelectedPost(post);
+        // Establece la publicación seleccionada para mostrar en detalle.
     };
 
     const handleBackClick = () => {
         setSelectedPost(null);
         setEditingPost(null);
+        // Restablece la vista de publicaciones y cierra la vista de edición.
     };
 
     const handleLikeClick = async (post) => {
@@ -45,6 +69,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
             setShowLoginMessage(true);
             setTimeout(() => setShowLoginMessage(false), 3000);
             return;
+            // Si el usuario no está autenticado, muestra un mensaje solicitando iniciar sesión y no permite dar "me gusta".
         }
 
         const response = await actions.toggleLike(post.id);
@@ -53,10 +78,12 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
             const updatedPosts = store.posts.map(p => {
                 if (p.id === post.id) {
                     return { ...p, liked_by_user: response.liked_by_user || [], likes_count: response.likes_count };
+                    // Actualiza la publicación con los nuevos datos de "me gusta".
                 }
                 return p;
             });
             setSelectedPost(updatedPosts.find(p => p.id === post.id));
+            // Actualiza la publicación seleccionada en detalle con los nuevos datos.
         }
     };
 
@@ -64,6 +91,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
         setEditingPost(post);
         setShowCreatePostForm(true);
         setSelectedPost(null);  // Asegúrate de cerrar la vista de detalles si se está editando
+        // Maneja la edición de la publicación, abriendo el formulario de edición y cerrando la vista de detalles.
     };
 
     const handleDeleteClick = async (post) => {
@@ -72,8 +100,10 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
             setSelectedPost(null);
             setEditingPost(null);
             actions.getUserPosts(); // Volver a cargar los posts después de eliminar
+            // Si la eliminación es exitosa, restablece la vista y recarga las publicaciones.
         } else {
             console.error(response.error);
+            // Si hay un error, lo muestra en la consola.
         }
     };
 
@@ -81,6 +111,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
         if (likedBy.length === 0) return "alguien";
         const randomUser = likedBy[Math.floor(Math.random() * likedBy.length)];
         return store.users.find(user => user.id === randomUser)?.username || "alguien";
+        // Devuelve un nombre de usuario aleatorio de la lista de usuarios que han dado "me gusta" a la publicación.
     };
 
     return (
@@ -91,7 +122,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
                         {store.posts.map((post) => (
                             <Col key={post.id} md={4} className={styles.postCard} onClick={() => handlePostClick(post)}>
                                 <Card>
-                                    <Card.Img variant="top" src={post.images[0]} />
+                                    <Card.Img variant="top" src={post.images[0]} className={styles.allpostCard} />
                                 </Card>
                             </Col>
                         ))}

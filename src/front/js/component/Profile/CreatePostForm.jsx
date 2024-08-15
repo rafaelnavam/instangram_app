@@ -1,28 +1,62 @@
 import React, { useState, useContext, useEffect } from "react";
+// Importa React y los hooks useState, useContext y useEffect para gestionar el estado y efectos secundarios.
+
 import { Context } from "../../store/appContext";
+// Importa el contexto global de la aplicación.
+
 import styles from "./CreatePostForm.module.css";
+// Importa los estilos CSS específicos para el componente CreatePostForm.
+
 import { Button, Form, Row, Col, Modal, Image } from 'react-bootstrap';
+// Importa componentes de React Bootstrap para la construcción de la interfaz de usuario.
+
 import Cropper from 'react-easy-crop';
+// Importa el componente Cropper para recortar imágenes.
+
 import getCroppedImg from "../cropImage.js";
+// Importa una función personalizada para obtener la imagen recortada.
 
 const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) => {
+    // Componente funcional que recibe props para manejar el estado de edición de un post y la visibilidad del formulario.
+
     const { actions } = useContext(Context);
+    // Usa el contexto global para acceder a las acciones de la aplicación.
+
     const [formData, setFormData] = useState({
         message: "",
         location: "",
         status: "drafted",
     });
+    // Estado para manejar los datos del formulario: mensaje, ubicación y estado del post.
+
     const [showModal, setShowModal] = useState(false);
+    // Estado para manejar la visibilidad del modal de mensajes.
+
     const [modalMessage, setModalMessage] = useState("");
+    // Estado para almacenar el mensaje que se muestra en el modal.
+
     const [images, setImages] = useState([]);
+    // Estado para almacenar las imágenes cargadas por el usuario.
+
     const [croppedAreas, setCroppedAreas] = useState([]);
+    // Estado para almacenar las áreas recortadas de las imágenes.
+
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
+    // Estado para manejar el índice de la imagen actualmente seleccionada para recortar.
+
     const [crop, setCrop] = useState({ x: 0, y: 0 });
+    // Estado para manejar la posición de recorte.
+
     const [zoom, setZoom] = useState(1);
+    // Estado para manejar el nivel de zoom del recorte.
+
     const [croppedImages, setCroppedImages] = useState([]);
+    // Estado para almacenar las imágenes recortadas.
 
     useEffect(() => {
         if (editingPost && Object.keys(editingPost).length > 0) {
+            // Si se está editando un post existente, inicializa los datos del formulario con los valores actuales del post.
+
             setFormData({
                 message: editingPost.message || "",
                 location: editingPost.location || "",
@@ -37,40 +71,51 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
                         return new File([blob], "image.jpg", { type: blob.type });
                     })
                 );
+                // Descarga y convierte las imágenes del post editado en blobs de archivos.
+
                 setImages(imageBlobs.map(blob => URL.createObjectURL(blob)));
+                // Crea URLs de las imágenes descargadas para mostrarlas en el formulario.
+
                 setCroppedImages(imageBlobs);
+                // Establece las imágenes recortadas iniciales como las imágenes descargadas.
             };
 
             if (editingPost.images && editingPost.images.length > 0) {
                 fetchImages();
+                // Llama a la función para obtener las imágenes si el post tiene alguna.
             }
         }
     }, [editingPost]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+        // Actualiza los datos del formulario cuando el usuario cambia algún campo.
     };
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
         const imageUrls = files.map(file => URL.createObjectURL(file));
         setImages(imageUrls);
-        setCroppedImages([]);  // Reset cropped images
+        setCroppedImages([]);
         setCurrentImageIndex(0);
+        // Maneja el cambio de imágenes seleccionadas por el usuario. Convierte los archivos en URLs y resetea las imágenes recortadas.
     };
 
     const handleCropComplete = (croppedAreaPercentage, croppedAreaPixels) => {
         const newCroppedAreas = [...croppedAreas];
         newCroppedAreas[currentImageIndex] = croppedAreaPixels;
         setCroppedAreas(newCroppedAreas);
+        // Guarda las coordenadas del área recortada para la imagen actual.
     };
 
     const handleCropChange = (newCrop) => {
         setCrop(newCrop);
+        // Actualiza el estado de recorte con la nueva posición de recorte.
     };
 
     const handleZoomChange = (newZoom) => {
         setZoom(newZoom);
+        // Actualiza el nivel de zoom del recorte.
     };
 
     const handleCropAccept = async () => {
@@ -87,8 +132,10 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
                     setCurrentImageIndex(0);
                     setImages([]);
                 }
+                // Recorta la imagen actual usando las coordenadas almacenadas y guarda el resultado.
             } catch (error) {
                 console.error("Error cropping image:", error);
+                // Muestra un error en la consola si ocurre un problema durante el recorte.
             }
         }
     };
@@ -101,6 +148,7 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
         } else {
             setCurrentImageIndex(0);
         }
+        // Cancela el recorte de la imagen actual y la elimina de la lista.
     };
 
     const handleSubmit = async (e) => {
@@ -109,6 +157,7 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
             setModalMessage("Message and image are required.");
             setShowModal(true);
             return;
+            // Si el mensaje o las imágenes recortadas están vacíos, muestra un mensaje de error y no permite enviar el formulario.
         }
 
         const postData = new FormData();
@@ -119,6 +168,7 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
         croppedImages.forEach((image, index) => {
             postData.append("images", image, `image${index}.jpg`);
         });
+        // Crea un objeto FormData para enviar el mensaje, ubicación, estado e imágenes recortadas al backend.
 
         try {
             const result = editingPost && Object.keys(editingPost).length > 0
@@ -134,14 +184,17 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
                 });
                 setCroppedImages([]);
                 setEditingPost(null);
-                setShowCreatePostForm(false);  // Cerrar el modal después de crear/editar la publicación
+                setShowCreatePostForm(false);
+                // Si la creación/edición es exitosa, muestra un mensaje de éxito, resetea el formulario y cierra el modal.
             } else {
                 setModalMessage(result ? result.error : "An unknown error occurred");
+                // Si hay un error, muestra el mensaje de error.
             }
             setShowModal(true);
         } catch (error) {
             setModalMessage(`Error: ${error.message}`);
             setShowModal(true);
+            // Si ocurre un error en la solicitud, muestra un mensaje de error en el modal.
         }
     };
 
@@ -151,20 +204,24 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
             if (response && response.success) {
                 setModalMessage("Post successfully deleted");
                 setEditingPost(null);
-                setShowCreatePostForm(false);  // Cerrar el modal después de eliminar la publicación
+                setShowCreatePostForm(false);
+                // Si la eliminación del post es exitosa, muestra un mensaje de éxito y cierra el modal.
             } else {
                 setModalMessage(response ? response.error : "An unknown error occurred");
+                // Si hay un error al eliminar, muestra un mensaje de error.
             }
             setShowModal(true);
         } catch (error) {
             setModalMessage(`Error deleting post: ${error.message}`);
             setShowModal(true);
+            // Si ocurre un error al eliminar el post, muestra un mensaje de error en el modal.
         }
     };
 
     const handleCloseModal = () => {
         setShowModal(false);
         setModalMessage("");
+        // Cierra el modal y limpia el mensaje del modal.
     };
 
     const handleCancelEdit = () => {
@@ -175,7 +232,8 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
             status: "drafted",
         });
         setCroppedImages([]);
-        setShowCreatePostForm(false);  // Cerrar el modal al cancelar la edición
+        setShowCreatePostForm(false);
+        // Cancela la edición del post, resetea el formulario y cierra el modal.
     };
 
     return (

@@ -1,37 +1,70 @@
 import React, { useContext, useEffect, useState } from 'react';
+// Importa React junto con los hooks useContext, useEffect y useState para gestionar estado y efectos secundarios.
+
 import { Link, useNavigate } from "react-router-dom";
+// Importa el componente Link y el hook useNavigate de react-router-dom para la navegación entre rutas.
+
 import { Navbar, Container, Form, FormControl, InputGroup, Button, Dropdown, Modal } from 'react-bootstrap';
+// Importa componentes de React Bootstrap para construir la interfaz de usuario: Navbar, Container, Form, FormControl, InputGroup, Button, Dropdown, y Modal.
+
 import { Context } from '../../store/appContext';
+// Importa el contexto global de la aplicación.
+
 import styles from './Navbar.module.css';
+// Importa los estilos CSS específicos para el componente Navbar.
+
 import logoRojo from '../../../img/insta-svgrepo-com.png';
+// Importa el logo de la aplicación.
+
 import profilePic from '../../../img/profile-circle-svgrepo-com.png';
+// Importa una imagen predeterminada para el perfil del usuario.
 
 const NavigationBar = () => {
     const { store, actions } = useContext(Context);
+    // Usa el contexto global para acceder al store y las acciones de la aplicación.
+
     const [searchQuery, setSearchQuery] = useState('');
+    // Estado para manejar el valor de la búsqueda de usuarios.
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Estado para verificar si el usuario está autenticado.
+
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    // Estado para manejar la visibilidad del dropdown de resultados de búsqueda.
+
     const [showLoginMessage, setShowLoginMessage] = useState(false);
+    // Estado para manejar la visibilidad del modal que solicita iniciar sesión.
 
     const navigate = useNavigate();
+    // Inicializa el hook useNavigate para redirigir al usuario a diferentes rutas.
+
     const { uploadedUserData } = store;
+    // Extrae los datos del usuario cargados del store global.
 
     useEffect(() => {
         const checkAuthStatus = async () => {
             const token = localStorage.getItem('token');
+            // Verifica si hay un token de autenticación almacenado en localStorage.
+
             if (token) {
                 const result = await actions.validateToken(token);
+                // Valida el token llamando a una acción que lo verifique en el backend.
             }
         };
         checkAuthStatus();
+        // Llama a la función checkAuthStatus al montar el componente para verificar el estado de autenticación.
     }, [navigate]);
 
     useEffect(() => {
         const authStatus = JSON.parse(localStorage.getItem("isAuthenticated"));
+        // Obtiene el estado de autenticación desde localStorage.
+
         setIsAuthenticated(authStatus);
+        // Actualiza el estado de autenticación en el componente.
 
         if (authStatus) {
             actions.loadUserData();
+            // Si el usuario está autenticado, carga los datos del usuario desde el backend.
         }
     }, [navigate]);
 
@@ -39,35 +72,49 @@ const NavigationBar = () => {
         const delayDebounceFn = setTimeout(() => {
             if (searchQuery) {
                 actions.searchUsers(searchQuery);
+                // Si hay una consulta de búsqueda, llama a la acción para buscar usuarios después de un pequeño retraso.
             }
         }, 300);
 
         return () => clearTimeout(delayDebounceFn);
+        // Limpia el temporizador al desmontar el componente o cambiar la consulta de búsqueda.
     }, [searchQuery]);
 
     const handleSearchChange = (e) => {
         setSearchQuery(e.target.value);
+        // Actualiza el estado de la consulta de búsqueda con el valor ingresado por el usuario.
+
         setIsDropdownOpen(true);
+        // Abre el dropdown de resultados de búsqueda.
     };
 
     const handleUserClick = (username) => {
         if (!isAuthenticated) {
             setShowLoginMessage(true);
-            setSearchQuery(''); // Borrar la búsqueda
-            setIsDropdownOpen(false); // Cerrar el dropdown
+            // Si el usuario no está autenticado, muestra el modal que solicita iniciar sesión.
+
+            setSearchQuery(''); // Limpia la búsqueda.
+            setIsDropdownOpen(false); // Cierra el dropdown.
         } else {
             setIsDropdownOpen(false);
             navigate(`/profile/${username}`);
+            // Si el usuario está autenticado, redirige al perfil del usuario seleccionado.
         }
     };
 
     const handleLogout = async () => {
         await actions.closeSession();
+        // Llama a la acción para cerrar la sesión del usuario.
+
         window.location.reload();
+        // Recarga la página para limpiar cualquier estado residual.
+
         navigate('/');
+        // Redirige al usuario a la página de inicio.
     };
 
     const profileImageUrl = uploadedUserData.profile_image_url || profilePic;
+    // Define la URL de la imagen de perfil del usuario. Si no hay una imagen cargada, usa la imagen predeterminada.
 
     return (
         <>

@@ -1,13 +1,13 @@
-import click
-from api.models import db, User, Post, PostImage, Likes, ProfileImage
-from flask import Flask
-from faker import Faker
-import requests
+import click  # Importa la biblioteca click que se utiliza para crear comandos en la CLI.
+from api.models import db, User, Post, PostImage, Likes, ProfileImage  # Importa los modelos de la base de datos desde el archivo models.
+from flask import Flask  # Importa Flask para crear la aplicación.
+from faker import Faker  # Importa Faker para generar datos falsos.
+import requests  # Importa requests para hacer peticiones HTTP.
 
-fake = Faker()
+fake = Faker()  # Crea una instancia de Faker para generar datos falsos.
 
 """
-COMANDO PARA REINICIR MIGRACIONES:
+COMANDO PARA REINICIAR MIGRACIONES:
 
 rm -R -f ./migrations &&
 pipenv run init &&
@@ -17,98 +17,90 @@ psql -h localhost postgres -U facebook_app_db -c 'CREATE EXTENSION unaccent;' ||
 pipenv run migrate &&
 pipenv run upgrade
 
-cambia >>>>> facebook_app_db <<<<<< por el nombre e tu base de datos
+cambia >>>>> facebook_app_db <<<<<< por el nombre de tu base de datos
 
 LUEGO DE BORRAR LA BASE DE DATOS CORRE EL ENTORNO VIRTUAL:
 pipenv shell
 
-SI DA ERROR VERIFICA SI TIENES pipenv install flask-migrate INSTALADO. SI NO, INSTALALO.
+SI DA ERROR VERIFICA SI TIENES pipenv install flask-migrate INSTALADO. SI NO, INSTÁLALO.
 pipenv install Flask
-
 """
 
-""" 
-This is an example command "insert-test-data" that you can run from the command line
-by typing: $  flask insert-test-data 10 20 50
-"""
-def setup_commands(app):
+def setup_commands(app):  # Define una función para configurar comandos personalizados en la aplicación Flask.
 
-    @app.cli.command("insert-test-users") # name of our command
-    @click.argument("count") # argument of out command
-    def insert_test_users(count):
-        print("Creating test users")
-        for x in range(1, int(count) + 1):
+    @app.cli.command("insert-test-users")  # Define un nuevo comando CLI llamado "insert-test-users".
+    @click.argument("count")  # Define un argumento CLI que acepta un número, "count".
+    def insert_test_users(count):  # Define la función que se ejecutará cuando se invoque el comando.
+        print("Creating test users")  # Imprime un mensaje indicando que se están creando usuarios de prueba.
+        for x in range(1, int(count) + 1):  # Itera desde 1 hasta el valor de "count" para crear múltiples usuarios.
             user = User(
-                email=f"test_user{x}@test.com",
-                password="123456",
-                is_active=True,
-                username=f"testuser{x}",
-                name=fake.first_name(),
-                last_name=fake.last_name(),
-                image_url=fake.image_url()
+                email=f"test_user{x}@test.com",  # Genera un correo electrónico para el usuario.
+                password="123456",  # Asigna una contraseña por defecto.
+                is_active=True,  # Establece el usuario como activo.
+                username=f"testuser{x}",  # Genera un nombre de usuario único.
+                name=fake.first_name(),  # Genera un nombre falso.
+                last_name=fake.last_name(),  # Genera un apellido falso.
+                image_url=fake.image_url()  # Genera una URL de imagen falsa.
             )
-            db.session.add(user)
-            db.session.commit()
-            print("User: ", user.email, " created.")
+            db.session.add(user)  # Agrega el nuevo usuario a la sesión de la base de datos.
+            db.session.commit()  # Confirma la transacción en la base de datos.
+            print("User: ", user.email, " created.")  # Imprime un mensaje indicando que el usuario ha sido creado.
+        print("All test users created")  # Imprime un mensaje indicando que todos los usuarios han sido creados.
 
-        print("All test users created")
+    @app.cli.command("insert-test-data")  # Define un nuevo comando CLI llamado "insert-test-data".
+    @click.argument("user_count")  # Define un argumento CLI para el número de usuarios a crear.
+    @click.argument("post_count")  # Define un argumento CLI para el número de publicaciones a crear.
+    @click.argument("likes_count")  # Define un argumento CLI para el número de "me gusta" a crear.
+    def insert_test_data(user_count, post_count, likes_count):  # Define la función que se ejecutará cuando se invoque el comando.
+        insert_users(int(user_count))  # Llama a la función para insertar usuarios con el número especificado.
+        insert_posts(int(post_count))  # Llama a la función para insertar publicaciones con el número especificado.
+        insert_likes(int(likes_count))  # Llama a la función para insertar "me gusta" con el número especificado.
 
-    @app.cli.command("insert-test-data")
-    @click.argument("user_count")
-    @click.argument("post_count")
-    @click.argument("likes_count")
-    def insert_test_data(user_count, post_count, likes_count):
-        insert_users(int(user_count))
-        insert_posts(int(post_count))
-        insert_likes(int(likes_count))
-
-    def insert_users(count):
-        print("Creating test users")
-        for _ in range(count):
+    def insert_users(count):  # Define una función para crear usuarios de prueba.
+        print("Creating test users")  # Imprime un mensaje indicando que se están creando usuarios de prueba.
+        for _ in range(count):  # Itera la cantidad de veces especificada en "count".
             user = User(
-                email=fake.email(),
-                password="123456",
-                is_active=True,
-                username=fake.user_name(),
-                name=fake.first_name(),
-                last_name=fake.last_name(),
-                image_url=fake.image_url()
+                email=fake.email(),  # Genera un correo electrónico falso.
+                password="123456",  # Asigna una contraseña por defecto.
+                is_active=True,  # Establece el usuario como activo.
+                username=fake.user_name(),  # Genera un nombre de usuario falso.
+                name=fake.first_name(),  # Genera un nombre falso.
+                last_name=fake.last_name(),  # Genera un apellido falso.
+                image_url=fake.image_url()  # Genera una URL de imagen falsa.
             )
-            db.session.add(user)
-        db.session.commit()
-        print(f"{count} users created.")
+            db.session.add(user)  # Agrega el nuevo usuario a la sesión de la base de datos.
+        db.session.commit()  # Confirma la transacción en la base de datos.
+        print(f"{count} users created.")  # Imprime un mensaje indicando cuántos usuarios han sido creados.
 
-    def insert_posts(count):
-        users = User.query.all()
-        print("Creating test posts")
-        for _ in range(count):
-            user = fake.random_element(users)
+    def insert_posts(count):  # Define una función para crear publicaciones de prueba.
+        users = User.query.all()  # Consulta todos los usuarios en la base de datos.
+        print("Creating test posts")  # Imprime un mensaje indicando que se están creando publicaciones de prueba.
+        for _ in range(count):  # Itera la cantidad de veces especificada en "count".
+            user = fake.random_element(users)  # Selecciona un usuario aleatorio.
             post = Post(
-                message=fake.sentence(),
-                author_id=user.id,
-                location=fake.city(),
-                status="active"
+                message=fake.sentence(),  # Genera un mensaje falso para la publicación.
+                author_id=user.id,  # Asocia la publicación con el ID del usuario seleccionado.
+                location=fake.city(),  # Genera una ciudad falsa para la ubicación de la publicación.
+                status="active"  # Establece el estado de la publicación como "activa".
             )
-            db.session.add(post)
-            db.session.commit()
+            db.session.add(post)  # Agrega la nueva publicación a la sesión de la base de datos.
+            db.session.commit()  # Confirma la transacción en la base de datos.
+            for _ in range(fake.random_int(min=1, max=3)):  # Genera entre 1 y 3 imágenes para la publicación.
+                img_url = "https://picsum.photos/200/300"  # URL de una imagen aleatoria proporcionada por picsum.photos.
+                img_data = requests.get(img_url).content  # Realiza una petición HTTP para obtener la imagen y guarda el contenido.
+                post_image = PostImage(post_id=post.id, img_data=img_data)  # Crea un objeto PostImage con la imagen obtenida y lo asocia con la publicación.
+                db.session.add(post_image)  # Agrega la imagen de la publicación a la sesión de la base de datos.
+            db.session.commit()  # Confirma la transacción en la base de datos para las imágenes.
+        print(f"{count} posts created.")  # Imprime un mensaje indicando cuántas publicaciones han sido creadas.
 
-            # Add fake images to the post
-            for _ in range(fake.random_int(min=1, max=3)):
-                img_url = "https://picsum.photos/200/300"
-                img_data = requests.get(img_url).content
-                post_image = PostImage(post_id=post.id, img_data=img_data)
-                db.session.add(post_image)
-            db.session.commit()
-        print(f"{count} posts created.")
-
-    def insert_likes(count):
-        users = User.query.all()
-        posts = Post.query.all()
-        print("Creating test likes")
-        for _ in range(count):
-            user = fake.random_element(users)
-            post = fake.random_element(posts)
-            like = Likes(user_id=user.id, post_id=post.id)
-            db.session.add(like)
-        db.session.commit()
-        print(f"{count} likes created.")
+    def insert_likes(count):  # Define una función para crear "me gusta" de prueba.
+        users = User.query.all()  # Consulta todos los usuarios en la base de datos.
+        posts = Post.query.all()  # Consulta todas las publicaciones en la base de datos.
+        print("Creating test likes")  # Imprime un mensaje indicando que se están creando "me gusta" de prueba.
+        for _ in range(count):  # Itera la cantidad de veces especificada en "count".
+            user = fake.random_element(users)  # Selecciona un usuario aleatorio.
+            post = fake.random_element(posts)  # Selecciona una publicación aleatoria.
+            like = Likes(user_id=user.id, post_id=post.id)  # Crea un objeto Like asociando el usuario y la publicación seleccionados.
+            db.session.add(like)  # Agrega el "me gusta" a la sesión de la base de datos.
+        db.session.commit()  # Confirma la transacción en la base de datos.
+        print(f"{count} likes created.")  # Imprime un mensaje indicando cuántos "me gusta" han sido creados.

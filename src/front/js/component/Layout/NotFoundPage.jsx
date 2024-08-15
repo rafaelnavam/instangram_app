@@ -9,7 +9,8 @@ const NotFound = () => {
                 <img src={notFoundErrorAlert} alt="Not Found Error Alert" />
                 <h1 className={styles.notFoundTitle}>Página no encontrada</h1>
                 <p className={styles.notFoundMessage}>
-                    Lo sentimos, la página que estás buscando no existe. Intente buscar algo más o regrese a la página de inicio.                </p>
+                    Lo sentimos, la página que estás buscando no existe. Intente buscar algo más o regrese a la página de inicio.
+                </p>
             </div>
         </div>
     );

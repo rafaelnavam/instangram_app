@@ -59,82 +59,91 @@ jwt = JWTManager()  # Inicialización del JWTManager para manejar la generación
 
 
 
+#------------------OBTENER USUARIOS----------------------------------------------------------------------------------
 
-@api.route('/user', methods=['GET'])
-@jwt_required() 
+@api.route('/user', methods=['GET'])  # Define una ruta de la API para obtener la información del usuario, permitiendo solo el método GET.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def get_user_by_email():
-    try:
+    # Define la función que manejará las solicitudes a esta ruta.
 
-        current_user_id = get_jwt_identity() # Obtiene la id del usuario del token
-        user = User.query.get(current_user_id) # Buscar al usuario por su ID
+    try:
+        current_user_id = get_jwt_identity()  # Obtiene el ID del usuario a partir del token JWT.
+        user = User.query.get(current_user_id)  # Busca al usuario en la base de datos utilizando el ID obtenido del JWT.
+        
         if not user:
-            return jsonify({'message': 'User not found'}), 404
-        return jsonify(user.serialize()), 200 # Devolver los datos del usuario encontrado
+            return jsonify({'message': 'User not found'}), 404  # Si el usuario no existe, responde con un error 404.
+        
+        return jsonify(user.serialize()), 200  # Devuelve los datos del usuario encontrado en formato JSON.
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
     
+#------------------CREACION DE USUARIO----------------------------------------------------------------------------------
 
 """CREACION DE USUARIO CON GOOGLE ACCOUNT"""
-@api.route('/singup/user', methods=['POST'])
+@api.route('/signup/user', methods=['POST'])  # Define una ruta de la API para registrar nuevos usuarios, permitiendo solo el método POST.
 def create_new_normal_user():
+    # Define la función que manejará las solicitudes a esta ruta.
+
     try:
-        data = request.json
+        data = request.json  # Obtiene los datos en formato JSON enviados en la solicitud.
         if not data:
-            return jsonify({'error': 'No data provided'}), 400
+            return jsonify({'error': 'No data provided'}), 400  # Si no se proporcionan datos, responde con un error 400.
 
         if 'email' not in data:
-            return jsonify({'error': 'Email is required'}), 400
+            return jsonify({'error': 'Email is required'}), 400  # Si no se proporciona el email, responde con un error 400.
 
         if 'username' not in data:
-            return jsonify({'error': 'Username is required'}), 400
+            return jsonify({'error': 'Username is required'}), 400  # Si no se proporciona el nombre de usuario, responde con un error 400.
 
         if 'googleId' in data:
-            # Registro a través de Google, no es necesario verificar el correo
-            password_hash = None
-            user = User.query.filter_by(email=data['email']).first()
+            # Si se proporciona un googleId, se registra a través de Google, no es necesario verificar el correo.
+
+            password_hash = None  # No se necesita un hash de contraseña para el registro con Google.
+            user = User.query.filter_by(email=data['email']).first()  # Busca si ya existe un usuario con ese email.
             if user:
-                return jsonify({'error': 'Email already exists.'}), 409
+                return jsonify({'error': 'Email already exists.'}), 409  # Si el email ya existe, responde con un error 409.
 
             new_user = User(
-                email=data['email'],
-                google_id=data['googleId'],
-                password=password_hash,
-                username=data['username'],
-                name=data.get('name'),
-                last_name=data.get('last_name'),
-                is_active=True  # Activar la cuenta directamente
+                email=data['email'],  # Establece el email del nuevo usuario.
+                google_id=data['googleId'],  # Establece el googleId del nuevo usuario.
+                password=password_hash,  # No se establece una contraseña.
+                username=data['username'],  # Establece el nombre de usuario.
+                name=data.get('name'),  # Establece el nombre (opcional).
+                last_name=data.get('last_name'),  # Establece el apellido (opcional).
+                is_active=True  # Activa la cuenta directamente.
             )
 
-            db.session.add(new_user)
-            db.session.commit()
-            return jsonify({'message': 'User created successfully', 'create': True}), 201
+            db.session.add(new_user)  # Añade el nuevo usuario a la sesión de la base de datos.
+            db.session.commit()  # Confirma los cambios en la base de datos.
+            return jsonify({'message': 'User created successfully', 'create': True}), 201  # Responde con un mensaje de éxito.
 
         if 'password' not in data:
-            return jsonify({'error': 'Password is required'}), 400
+            return jsonify({'error': 'Password is required'}), 400  # Si no se proporciona la contraseña, responde con un error 400.
 
-
-        existing_user = User.query.filter_by(email=data['email']).first()
+        existing_user = User.query.filter_by(email=data['email']).first()  # Busca si ya existe un usuario con ese email.
         if existing_user:
-            return jsonify({'error': 'Email already exists.'}), 409
-        existing_username = User.query.filter_by(username=data['username']).first()  
-        if existing_username:  
-            return jsonify({'error': 'Username already exists.'}), 409  
+            return jsonify({'error': 'Email already exists.'}), 409  # Si el email ya existe, responde con un error 409.
 
-        password_hash = generate_password_hash(data['password']).decode('utf-8')
+        existing_username = User.query.filter_by(username=data['username']).first()  # Busca si ya existe un usuario con ese nombre de usuario.
+        if existing_username:  
+            return jsonify({'error': 'Username already exists.'}), 409  # Si el nombre de usuario ya existe, responde con un error 409.
+
+        password_hash = generate_password_hash(data['password']).decode('utf-8')  # Genera un hash de la contraseña.
 
         new_user = User(
-            email=data['email'],
-            password=password_hash,
-            username=data['username'],
-            name=data.get('name'),
-            last_name=data.get('last_name')
+            email=data['email'],  # Establece el email del nuevo usuario.
+            password=password_hash,  # Establece el hash de la contraseña.
+            username=data['username'],  # Establece el nombre de usuario.
+            name=data.get('name'),  # Establece el nombre (opcional).
+            last_name=data.get('last_name')  # Establece el apellido (opcional).
         )
 
-        token = generate_confirmation_token_email(new_user.email)
-        BASE_URL_FRONT = os.getenv('FRONTEND_URL')
-        confirm_url = url_for('api.confirm_email', token=token, _external=True)
-        confirm_url = f"{BASE_URL_FRONT}/ConfirmEmail?token={token}"
+        token = generate_confirmation_token_email(new_user.email)  # Genera un token para la confirmación del correo.
+        BASE_URL_FRONT = os.getenv('FRONTEND_URL')  # Obtiene la URL del frontend desde las variables de entorno.
+        confirm_url = url_for('api.confirm_email', token=token, _external=True)  # Genera la URL de confirmación del correo.
+        confirm_url = f"{BASE_URL_FRONT}/ConfirmEmail?token={token}"  # Combina la URL base con la URL de confirmación.
         html = f"""
         <!DOCTYPE html>
         <html>
@@ -147,61 +156,70 @@ def create_new_normal_user():
                 <a href="{confirm_url}" style="background-color: #007bff; color: white; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; border-radius: 5px;">Activate Account</a>
             </div>
         </body>
-        </html>"""
+        </html>"""  # HTML del correo electrónico de confirmación.
 
-        send_email('Confirm Your Email', new_user.email, html)
+        send_email('Confirm Your Email', new_user.email, html)  # Envía el correo electrónico de confirmación al usuario.
 
-        db.session.add(new_user)
-        db.session.commit()
+        db.session.add(new_user)  # Añade el nuevo usuario a la sesión de la base de datos.
+        db.session.commit()  # Confirma los cambios en la base de datos.
 
-        return jsonify({'message': 'Please confirm your email address to complete the registration', 'create': True}), 201
+        return jsonify({'message': 'Please confirm your email address to complete the registration', 'create': True}), 201  # Responde solicitando la confirmación del correo.
 
     except Exception as e:
-        return jsonify({'error': 'Error in user creation: ' + str(e)}), 500
-    
+        return jsonify({'error': 'Error in user creation: ' + str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
 
-@api.route('/user/exists', methods=['POST'])
+    
+#------------------VERIFICAR SI EL USUARIO EXISTE----------------------------------------------------------------------------------
+
+@api.route('/user/exists', methods=['POST'])  # Define una ruta de la API para verificar si un usuario existe, permitiendo solo el método POST.
 def check_user_exists():
-    data = request.json
-    email = data.get('email')
+    # Define la función que manejará las solicitudes a esta ruta.
+
+    data = request.json  # Obtiene los datos en formato JSON enviados en la solicitud.
+    email = data.get('email')  # Extrae el email de los datos recibidos.
 
     if not email:
-        return jsonify({'exists': False, 'error': 'Email is required'}), 400
+        return jsonify({'exists': False, 'error': 'Email is required'}), 400  # Si no se proporciona el email, responde con un error 400.
 
-    user = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first()  # Busca un usuario en la base de datos que coincida con el email proporcionado.
     if user:
-        return jsonify({'exists': True}), 200
+        return jsonify({'exists': True}), 200  # Si el usuario existe, responde con un indicador de existencia y código 200.
     else:
-        return jsonify({'exists': False}), 200
+        return jsonify({'exists': False}), 200  # Si el usuario no existe, responde con un indicador de no existencia y código 200.
+
     
 
 #-----------------------------------------------------actualizar el usuario-----------------------------------------------------------
-@api.route('/user', methods=['PUT'])
-@jwt_required()
+
+@api.route('/user', methods=['PUT'])  # Define una ruta de la API para actualizar datos de usuario, permitiendo solo el método PUT.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def update_data_user():
+    # Define la función que manejará las solicitudes a esta ruta.
+
     try:
-        user_id = get_jwt_identity()
-        data = request.json
+        user_id = get_jwt_identity()  # Obtiene el ID del usuario a partir del token JWT.
+        data = request.json  # Intenta obtener los datos en formato JSON enviados en la solicitud.
         if not data:
-            return jsonify({'error': 'No data provided'}), 400
+            return jsonify({'error': 'No data provided'}), 400  # Si no se proporcionan datos, responde con un error 400.
         
-        user = User.query.get(user_id)
+        user = User.query.get(user_id)  # Busca al usuario en la base de datos utilizando el ID obtenido del JWT.
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'User not found'}), 404  # Si el usuario no existe, responde con un error 404.
 
-        for key, value in data.items():
-            if hasattr(user, key):
-                if key == 'password' and value:
-                    password_hash = generate_password_hash(value).decode('utf-8')
-                    setattr(user, key, password_hash)
+        for key, value in data.items():  # Itera sobre los pares clave-valor de los datos proporcionados.
+            if hasattr(user, key):  # Verifica si el usuario tiene un atributo con el nombre de la clave.
+                if key == 'password' and value:  # Si la clave es 'password' y tiene un valor:
+                    password_hash = generate_password_hash(value).decode('utf-8')  # Genera un hash de la contraseña.
+                    setattr(user, key, password_hash)  # Establece la contraseña hash en el usuario.
                 else:
-                    setattr(user, key, value)
+                    setattr(user, key, value)  # Establece el valor proporcionado en el atributo correspondiente del usuario.
 
-        db.session.commit()
-        return jsonify({'message': 'User updated successfully'})
+        db.session.commit()  # Confirma los cambios en la base de datos.
+        return jsonify({'message': 'User updated successfully'})  # Responde con un mensaje de éxito.
     
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
     
 
 
@@ -251,53 +269,56 @@ def validate_token():
 #-------------------CREAR  TOKEN LOGIN--------------------------------------------------------------------------
 
 """CREACION DE TOKEN CON GOOGLE ACCOUNT"""
-@api.route('/token', methods=['POST'])
+@api.route('/token', methods=['POST'])  # Define una ruta de la API para la creación de tokens de usuario, permitiendo solo el método POST.
 def create_normal_user_token():
-    try:
-        data = request.json
-        if not data:
-            return jsonify({'error': 'No data provided'}), 400
+    # Define la función que manejará las solicitudes a esta ruta.
 
-        email = data.get('email')
-        google_id = data.get('googleId')
-        password = data.get('password')
+    try:
+        data = request.json  # Intenta obtener los datos en formato JSON enviados en la solicitud.
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400  # Si no se proporcionan datos, responde con un error 400.
+
+        email = data.get('email')  # Extrae el email de los datos recibidos.
+        google_id = data.get('googleId')  # Extrae el google_id de los datos recibidos.
+        password = data.get('password')  # Extrae el password de los datos recibidos.
 
         if not email:
-            return jsonify({'error': 'Email is required'}), 400
+            return jsonify({'error': 'Email is required'}), 400  # Si no se proporciona el email, responde con un error 400.
 
-        existing_user = User.query.filter_by(email=email).first()
+        existing_user = User.query.filter_by(email=email).first()  # Busca un usuario en la base de datos que coincida con el email proporcionado.
         if not existing_user:
-            return jsonify({'error': 'Email does not exist.'}), 400
+            return jsonify({'error': 'Email does not exist.'}), 400  # Si no existe un usuario con ese email, responde con un error 400.
 
         if not existing_user.is_active:
-            return jsonify({'error': 'Account deleted or not active'}), 400
+            return jsonify({'error': 'Account deleted or not active'}), 400  # Si la cuenta del usuario no está activa, responde con un error 400.
 
-        if google_id:
-            # Autenticación con Google
-            if existing_user.google_id == google_id:
-                expires = timedelta(hours=1)
-                user_id = existing_user.id
-                access_token = create_access_token(identity=user_id, expires_delta=expires)
-                return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200
+        if google_id:  # Si se proporciona un google_id, intenta autenticación con Google.
+            if existing_user.google_id == google_id:  # Si el google_id coincide con el registrado en la base de datos para ese usuario:
+                expires = timedelta(hours=1)  # Define la expiración del token en una hora.
+                user_id = existing_user.id  # Obtén el ID del usuario.
+                access_token = create_access_token(identity=user_id, expires_delta=expires)  # Crea un token de acceso utilizando el ID del usuario.
+                return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200  # Responde con el token de acceso y un indicador de que el login fue exitoso.
             else:
-                return jsonify({'error': 'Google ID does not match'}), 400
-        elif password:
-            # Autenticación normal
-            password_user_db = existing_user.password
-            true_o_false = check_password_hash(password_user_db, password)
+                return jsonify({'error': 'Google ID does not match'}), 400  # Si el google_id no coincide, responde con un error 400.
+
+        elif password:  # Si se proporciona una contraseña, intenta autenticación normal.
+            password_user_db = existing_user.password  # Obtén la contraseña almacenada en la base de datos.
+            true_o_false = check_password_hash(password_user_db, password)  # Verifica si la contraseña proporcionada coincide con la almacenada.
 
             if true_o_false:
-                expires = timedelta(hours=1)
-                user_id = existing_user.id
-                access_token = create_access_token(identity=user_id, expires_delta=expires)
-                return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200
+                expires = timedelta(hours=1)  # Define la expiración del token en una hora.
+                user_id = existing_user.id  # Obtén el ID del usuario.
+                access_token = create_access_token(identity=user_id, expires_delta=expires)  # Crea un token de acceso utilizando el ID del usuario.
+                return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200  # Responde con el token de acceso y un indicador de que el login fue exitoso.
             else:
-                return jsonify({'error': 'Incorrect password'}), 400
+                return jsonify({'error': 'Incorrect password'}), 400  # Si la contraseña no coincide, responde con un error 400.
+
         else:
-            return jsonify({'error': 'Password or Google ID is required'}), 400
+            return jsonify({'error': 'Password or Google ID is required'}), 400  # Si no se proporciona ni contraseña ni google_id, responde con un error 400.
 
     except Exception as e:
-        return jsonify({'error': 'Error login user: ' + str(e)}), 500
+        return jsonify({'error': 'Error login user: ' + str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
 
 #-------------------CREAR  TOKEN recuperar contraseña--------------------------------------------------------------------------
 
@@ -466,190 +487,214 @@ def delete_profile_image():
 
 #-------------------------------------------------ENPOINT PARA LA GESTION DE POSTS-----------------------------------------------------------
 """CREAR POSTS"""
-@api.route('/posts', methods=['POST'])
-@jwt_required()
+@api.route('/posts', methods=['POST'])  # Define una ruta de la API para crear publicaciones, permitiendo solo el método POST.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def create_post():
-    try:
-        data = request.form
-        if not data:
-            return jsonify({'error': 'No data provided'}), 400
+    # Define la función que manejará las solicitudes a esta ruta.
 
-        current_user_id = get_jwt_identity()
+    try:
+        data = request.form  # Obtiene los datos del formulario enviados en la solicitud.
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400  # Si no se proporcionan datos, responde con un error 400.
+
+        current_user_id = get_jwt_identity()  # Obtiene el ID del usuario actual a partir del token JWT.
+        
         new_post = Post(
-            message=data['message'],
-            author_id=current_user_id,
-            location=data['location'],
-            status=data['status']
+            message=data['message'],  # Establece el mensaje de la nueva publicación.
+            author_id=current_user_id,  # Establece el ID del autor como el ID del usuario actual.
+            location=data['location'],  # Establece la ubicación de la publicación.
+            status=data['status']  # Establece el estado de la publicación.
         )
-        db.session.add(new_post)
-        db.session.commit()
+        db.session.add(new_post)  # Añade la nueva publicación a la sesión de la base de datos.
+        db.session.commit()  # Confirma los cambios en la base de datos.
 
         # Subir imágenes
-        files = request.files.getlist('images')
+        files = request.files.getlist('images')  # Obtiene la lista de archivos de imágenes del formulario.
         for file in files:
-            new_image = PostImage(post_id=new_post.id, img_data=file.read())
-            db.session.add(new_image)
-        db.session.commit()
+            new_image = PostImage(post_id=new_post.id, img_data=file.read())  # Crea una nueva imagen asociada a la publicación.
+            db.session.add(new_image)  # Añade la imagen a la sesión de la base de datos.
+        db.session.commit()  # Confirma los cambios en la base de datos.
 
-        return jsonify({'message': 'Post created successfully', 'post': new_post.serialize()}), 201
+        return jsonify({'message': 'Post created successfully', 'post': new_post.serialize()}), 201  # Responde con un mensaje de éxito y los datos de la publicación.
+    
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()  # Si ocurre un error, deshace cualquier cambio realizado en la sesión de la base de datos.
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
 
 
 
 """EDITAR POSTS"""
-@api.route('/posts/<int:post_id>', methods=['PUT'])
-@jwt_required()
+@api.route('/posts/<int:post_id>', methods=['PUT'])  # Define una ruta de la API para editar una publicación específica, permitiendo solo el método PUT.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def edit_post(post_id):
+    # Define la función que manejará las solicitudes a esta ruta.
+
     try:
-        data = request.form
+        data = request.form  # Obtiene los datos del formulario enviados en la solicitud.
         if not data:
-            return jsonify({'error': 'No data provided'}), 400
+            return jsonify({'error': 'No data provided'}), 400  # Si no se proporcionan datos, responde con un error 400.
 
-        current_user_id = get_jwt_identity()
-        post = Post.query.filter_by(id=post_id, author_id=current_user_id).first()
+        current_user_id = get_jwt_identity()  # Obtiene el ID del usuario actual a partir del token JWT.
+        post = Post.query.filter_by(id=post_id, author_id=current_user_id).first()  # Busca la publicación por su ID y el ID del autor.
         if not post:
-            return jsonify({'error': 'Post not found or not authorized'}), 404
+            return jsonify({'error': 'Post not found or not authorized'}), 404  # Si la publicación no se encuentra o el usuario no está autorizado, responde con un error 404.
 
-        post.message = data.get('message', post.message)
-        post.location = data.get('location', post.location)
-        post.status = data.get('status', post.status)
+        post.message = data.get('message', post.message)  # Actualiza el mensaje de la publicación si se proporciona, o deja el actual.
+        post.location = data.get('location', post.location)  # Actualiza la ubicación de la publicación si se proporciona, o deja la actual.
+        post.status = data.get('status', post.status)  # Actualiza el estado de la publicación si se proporciona, o deja el actual.
 
         # Subir nuevas imágenes
-        files = request.files.getlist('images')
+        files = request.files.getlist('images')  # Obtiene la lista de archivos de imágenes del formulario.
         if files:
             # Borrar las imágenes antiguas
-            for image in post.images:
-                db.session.delete(image)
+            for image in post.images:  # Itera sobre las imágenes actuales de la publicación.
+                db.session.delete(image)  # Elimina cada imagen de la base de datos.
 
             # Subir nuevas imágenes
-            for file in files:
-                new_image = PostImage(post_id=post.id, img_data=file.read())
-                db.session.add(new_image)
+            for file in files:  # Itera sobre los nuevos archivos de imágenes proporcionados.
+                new_image = PostImage(post_id=post.id, img_data=file.read())  # Crea una nueva imagen asociada a la publicación.
+                db.session.add(new_image)  # Añade la nueva imagen a la sesión de la base de datos.
         
-        db.session.commit()
-        return jsonify({'message': 'Post updated successfully', 'post': post.serialize()}), 200
+        db.session.commit()  # Confirma los cambios en la base de datos.
+        return jsonify({'message': 'Post updated successfully', 'post': post.serialize()}), 200  # Responde con un mensaje de éxito y los datos de la publicación actualizada.
+    
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()  # Si ocurre un error, deshace cualquier cambio realizado en la sesión de la base de datos.
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
 
 
 """ELIMINAR POSTS"""
-@api.route('/posts/<int:post_id>', methods=['DELETE'])
-@jwt_required()
+@api.route('/posts/<int:post_id>', methods=['DELETE'])  # Define una ruta de la API para eliminar (marcar como eliminado) una publicación específica, permitiendo solo el método DELETE.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def delete_post(post_id):
-    try:
-        current_user_id = get_jwt_identity()
-        post = Post.query.filter_by(id=post_id, author_id=current_user_id).first()
-        if not post:
-            return jsonify({'error': 'Post not found or not authorized'}), 404
+    # Define la función que manejará las solicitudes a esta ruta.
 
-        post.status = 'deleted'  # Cambia el estado a 'deleted'
-        db.session.commit()
-        return jsonify({'message': 'Post marked as deleted successfully'}), 200
+    try:
+        current_user_id = get_jwt_identity()  # Obtiene el ID del usuario actual a partir del token JWT.
+        post = Post.query.filter_by(id=post_id, author_id=current_user_id).first()  # Busca la publicación por su ID y el ID del autor.
+        if not post:
+            return jsonify({'error': 'Post not found or not authorized'}), 404  # Si la publicación no se encuentra o el usuario no está autorizado, responde con un error 404.
+
+        post.status = 'deleted'  # Cambia el estado de la publicación a 'deleted' en lugar de eliminarla físicamente.
+        db.session.commit()  # Confirma los cambios en la base de datos.
+        return jsonify({'message': 'Post marked as deleted successfully'}), 200  # Responde con un mensaje de éxito indicando que la publicación ha sido marcada como eliminada.
+    
     except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        db.session.rollback()  # Si ocurre un error, deshace cualquier cambio realizado en la sesión de la base de datos.
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
 
 
 
 """OBTENER POSTS DE USER"""
-@api.route('/user/posts', methods=['GET'])
-@jwt_required()
+@api.route('/user/posts', methods=['GET'])  # Define una ruta de la API para obtener todas las publicaciones de un usuario, permitiendo solo el método GET.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def get_user_posts():
-    user_id = get_jwt_identity()
+    user_id = get_jwt_identity()  # Obtiene el ID del usuario actual a partir del token JWT.
+    
     try:
         # Filtrar publicaciones por autor y estado diferente de 'deleted'
-        posts = Post.query.filter_by(author_id=user_id).filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()
-        return jsonify([post.serialize() for post in posts]), 200
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        posts = Post.query.filter_by(author_id=user_id).filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()  
+        # Obtiene todas las publicaciones del usuario actual que no estén marcadas como 'deleted', ordenadas por fecha de creación de forma descendente.
+        
+        return jsonify([post.serialize() for post in posts]), 200  # Devuelve la lista de publicaciones serializadas en formato JSON.
     
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
 
+    
 """OBTENER TODOS LOS POSTS"""
-@api.route('/allposts', methods=['GET'])
+@api.route('/allposts', methods=['GET'])  # Define una ruta de la API para obtener todas las publicaciones, permitiendo solo el método GET.
 def get_all_posts():
     try:
         # Filtrar publicaciones por estado diferente de 'deleted'
-        posts = Post.query.filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()
-        return jsonify([post.serialize() for post in posts]), 200
+        posts = Post.query.filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()  
+        # Obtiene todas las publicaciones cuyo estado no sea 'deleted', ordenadas por fecha de creación de forma descendente.
+        
+        return jsonify([post.serialize() for post in posts]), 200  # Devuelve la lista de publicaciones serializadas en formato JSON.
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
 
 
 """Dar y Quitar Likes"""
-@api.route('/post/<int:post_id>/like', methods=['POST'])
-@jwt_required()
+@api.route('/post/<int:post_id>/like', methods=['POST'])  # Define una ruta de la API para dar o quitar un like en una publicación específica, permitiendo solo el método POST.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def toggle_like(post_id):
     try:
-        user_id = get_jwt_identity()
-        post = Post.query.get(post_id)
+        user_id = get_jwt_identity()  # Obtiene el ID del usuario actual a partir del token JWT.
+        post = Post.query.get(post_id)  # Busca la publicación por su ID.
         if not post:
-            return jsonify({'error': 'Post not found'}), 404
+            return jsonify({'error': 'Post not found'}), 404  # Si la publicación no se encuentra, responde con un error 404.
 
-        like = Likes.query.filter_by(user_id=user_id, post_id=post_id).first()
+        like = Likes.query.filter_by(user_id=user_id, post_id=post_id).first()  # Busca si el usuario actual ya ha dado like a la publicación.
 
         if like:
-            db.session.delete(like)
-            db.session.commit()
-            message = 'Like removed'
+            db.session.delete(like)  # Si el like existe, lo elimina.
+            db.session.commit()  # Confirma los cambios en la base de datos.
+            message = 'Like removed'  # Establece el mensaje de respuesta indicando que el like ha sido eliminado.
         else:
-            new_like = Likes(user_id=user_id, post_id=post_id)
-            db.session.add(new_like)
-            db.session.commit()
-            message = 'Like added'
+            new_like = Likes(user_id=user_id, post_id=post_id)  # Si el like no existe, crea un nuevo like.
+            db.session.add(new_like)  # Añade el nuevo like a la sesión de la base de datos.
+            db.session.commit()  # Confirma los cambios en la base de datos.
+            message = 'Like added'  # Establece el mensaje de respuesta indicando que el like ha sido añadido.
 
         # Obtener la lista de IDs de los usuarios que han dado like
-        liked_by_user = [like.user_id for like in Likes.query.filter_by(post_id=post_id).all()]
+        liked_by_user = [like.user_id for like in Likes.query.filter_by(post_id=post_id).all()]  # Obtiene los IDs de los usuarios que han dado like a la publicación.
 
         # Contar el número total de likes
-        likes_count = len(liked_by_user)
+        likes_count = len(liked_by_user)  # Cuenta el número total de likes en la publicación.
 
         return jsonify({
             'message': message,
             'liked_by_user': liked_by_user,
             'likes_count': likes_count
-        }), 200
+        }), 200  # Devuelve un mensaje indicando si el like fue añadido o eliminado, junto con los datos actualizados de la publicación.
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
 
-
-@api.route('/user/profile/<string:username>', methods=['GET'])
-@jwt_required()
+"""
+Obtener usuario especifico
+"""
+@api.route('/user/profile/<string:username>', methods=['GET'])  # Define una ruta de la API para obtener el perfil de un usuario específico, permitiendo solo el método GET.
+@jwt_required()  # Requiere autenticación JWT para acceder a esta ruta.
 def get_other_user_profile(username):
     try:
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter_by(username=username).first()  # Busca al usuario por su nombre de usuario.
         if not user:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'User not found'}), 404  # Si el usuario no se encuentra, responde con un error 404.
 
-        posts = Post.query.filter_by(author_id=user.id).filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()
-        user_data = user.serialize()
-        user_posts = [post.serialize() for post in posts]
+        posts = Post.query.filter_by(author_id=user.id).filter(Post.status != 'deleted').order_by(Post.created_at.desc()).all()  
+        # Obtiene todas las publicaciones del usuario cuyo estado no sea 'deleted', ordenadas por fecha de creación de forma descendente.
+        
+        user_data = user.serialize()  # Serializa los datos del usuario.
+        user_posts = [post.serialize() for post in posts]  # Serializa las publicaciones del usuario.
 
         return jsonify({
             'user': user_data,
             'posts': user_posts
-        }), 200
+        }), 200  # Devuelve los datos del usuario y sus publicaciones en formato JSON.
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    
+        return jsonify({'error': str(e)}), 500  # Captura cualquier excepción y responde con un error 500, incluyendo el mensaje de error.
+
 
 """
 Búsqueda de Usuarios
 """
-@api.route('/users/search', methods=['GET'])
+@api.route('/users/search', methods=['GET'])  # Define una ruta de la API para buscar usuarios, permitiendo solo el método GET.
 def search_users():
-    query = request.args.get('query', '')
+    query = request.args.get('query', '')  # Obtiene el parámetro de búsqueda enviado en la URL.
     
     users = User.query.filter(
         db.or_(
-            User.name.ilike(f'%{query}%'),
-            User.last_name.ilike(f'%{query}%'),
-            User.username.ilike(f'%{query}%')
+            User.name.ilike(f'%{query}%'),  # Busca coincidencias en el nombre del usuario, ignorando mayúsculas y minúsculas.
+            User.last_name.ilike(f'%{query}%'),  # Busca coincidencias en el apellido del usuario, ignorando mayúsculas y minúsculas.
+            User.username.ilike(f'%{query}%')  # Busca coincidencias en el nombre de usuario, ignorando mayúsculas y minúsculas.
         )
-    ).all()
+    ).all()  # Devuelve todos los usuarios que coinciden con la búsqueda.
     
-    response = [user.serialize() for user in users]
-    return jsonify(response), 200
+    response = [user.serialize() for user in users]  # Serializa los datos de los usuarios encontrados.
+    return jsonify(response), 200  # Devuelve la lista de usuarios encontrados en formato JSON.
+
 

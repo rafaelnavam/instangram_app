@@ -1,29 +1,57 @@
 import React, { useEffect, useContext, useState } from 'react';
-import { Context } from '../store/appContext.js';
-import { Container, Card, Image, Carousel } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import Skeleton from 'react-loading-skeleton';
-import 'react-loading-skeleton/dist/skeleton.css';
-import styles from './AllPosts.module.css';
-import UserPic from '../../../front/img/profile-circle-svgrepo-com.png'
+// Importa React junto con los hooks useEffect, useContext y useState para gestionar el estado y los efectos secundarios.
 
+import { Context } from '../store/appContext.js';
+// Importa el contexto global de la aplicación.
+
+import { Container, Card, Image, Carousel } from 'react-bootstrap';
+// Importa componentes de React Bootstrap para construir la interfaz de usuario: Container, Card, Image, Carousel.
+
+import { useNavigate } from 'react-router-dom';
+// Importa el hook useNavigate de react-router-dom para la navegación.
+
+import Skeleton from 'react-loading-skeleton';
+// Importa el componente Skeleton para mostrar un efecto de carga.
+
+import 'react-loading-skeleton/dist/skeleton.css';
+// Importa los estilos CSS de Skeleton.
+
+import styles from './AllPosts.module.css';
+// Importa los estilos CSS específicos para el componente AllPosts.
+
+import UserPic from '../../../front/img/profile-circle-svgrepo-com.png';
+// Importa una imagen predeterminada para el perfil del usuario.
 
 const AllPosts = () => {
     const { actions, store } = useContext(Context);
+    // Usa el contexto global para acceder a las acciones y el store de la aplicación.
+
     const [userId, setUserId] = useState(null);
+    // Estado para almacenar el ID del usuario autenticado.
+
     const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // Estado para verificar si el usuario está autenticado.
+
     const [showLoginMessageRedirec, setShowLoginMessageRedirec] = useState(false);
+    // Estado para manejar la visibilidad del mensaje que solicita iniciar sesión antes de redirigir al perfil de un usuario.
+
     const [showLoginMessage, setShowLoginMessage] = useState(false);
+    // Estado para manejar la visibilidad del mensaje que solicita iniciar sesión antes de dar "me gusta".
+
     const [carouselIndex, setCarouselIndex] = useState({});
+    // Estado para manejar el índice activo de los carruseles de imágenes en las publicaciones.
+
     const navigate = useNavigate();
+    // Inicializa el hook useNavigate para redirigir al usuario a diferentes rutas.
 
     useEffect(() => {
         const fetchPosts = async () => {
             await actions.getAllPosts();
+            // Llama a la acción para obtener todas las publicaciones.
         };
 
         fetchPosts();
-    }, []);
+    }, [actions]);
 
     useEffect(() => {
         const isAuthenticated = JSON.parse(localStorage.getItem("isAuthenticated"));
@@ -31,8 +59,10 @@ const AllPosts = () => {
             const user_id = JSON.parse(localStorage.getItem("user_id"));
             setUserId(user_id);
             setIsAuthenticated(true);
+            // Si el usuario está autenticado, obtiene su ID y actualiza el estado de autenticación.
         } else {
             setIsAuthenticated(false);
+            // Si el usuario no está autenticado, actualiza el estado de autenticación a falso.
         }
     }, []);
 
@@ -41,11 +71,13 @@ const AllPosts = () => {
             setShowLoginMessage(true);
             setTimeout(() => setShowLoginMessage(false), 4000);
             return;
+            // Si el usuario no está autenticado, muestra un mensaje solicitando iniciar sesión y no permite dar "me gusta".
         }
 
         const response = await actions.toggleLike(post.id);
         if (response.success) {
-            actions.getAllPosts(); // Actualizar los posts para reflejar los cambios en los likes
+            actions.getAllPosts();
+            // Si la acción de "me gusta" tiene éxito, vuelve a cargar las publicaciones para reflejar el cambio.
         }
     };
 
@@ -53,6 +85,7 @@ const AllPosts = () => {
         if (likedBy.length === 0) return "alguien";
         const randomUser = likedBy[Math.floor(Math.random() * likedBy.length)];
         return store.users.find(user => user.id === randomUser)?.username || "alguien";
+        // Devuelve un nombre de usuario aleatorio de la lista de usuarios que han dado "me gusta" a la publicación.
     };
 
     const handleSelect = (selectedIndex, postId) => {
@@ -60,6 +93,7 @@ const AllPosts = () => {
             ...prevState,
             [postId]: selectedIndex
         }));
+        // Maneja el cambio de imagen en el carrusel actualizando el índice activo para la publicación dada.
     };
 
     const handleProfileClick = (username) => {
@@ -67,10 +101,11 @@ const AllPosts = () => {
             setShowLoginMessageRedirec(true);
             setTimeout(() => setShowLoginMessageRedirec(false), 4000);
             return;
+            // Si el usuario no está autenticado, muestra un mensaje solicitando iniciar sesión antes de redirigir al perfil.
         }
         navigate(`/profile/${username}`);
+        // Redirige al perfil del usuario cuyo nombre se ha hecho clic.
     };
-
     if (!store.allposts.length) {
         return (
             <Container className={styles.postsContainer}>

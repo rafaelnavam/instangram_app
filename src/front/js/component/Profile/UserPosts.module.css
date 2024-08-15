@@ -147,3 +147,9 @@
     object-fit: cover;
     /* Ensure image covers the entire area */
 }
+
+.allpostCard {
+    height: 200px;
+    object-fit: fill;
+
+}
