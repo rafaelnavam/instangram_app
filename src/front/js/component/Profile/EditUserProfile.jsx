@@ -96,7 +96,7 @@ const EditUserProfileEco = () => {
                 // Si hay un error, muestra el mensaje de error.
             }
         } catch (error) {
-            console.error('Error en handleSubmit:', error);
+            //console.error('Error en handleSubmit:', error);
             setUpdateMessage("Error en el sistema: " + error.message);
             setShowMessage(true);
             // Si ocurre un error en la solicitud, muestra un mensaje de error.

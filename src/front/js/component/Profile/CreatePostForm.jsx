@@ -134,7 +134,7 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
                 }
                 // Recorta la imagen actual usando las coordenadas almacenadas y guarda el resultado.
             } catch (error) {
-                console.error("Error cropping image:", error);
+                //console.error("Error cropping image:", error);
                 // Muestra un error en la consola si ocurre un problema durante el recorte.
             }
         }

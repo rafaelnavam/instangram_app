@@ -46,17 +46,17 @@ const getState = ({ getStore, getActions, setStore }) => {
               });
               return { isAuthenticated: true }; // Retorna un objeto indicando que la autenticación fue exitosa.
             } else {
-              console.error("Token inválido o usuario no encontrado"); // Muestra un error si el token es inválido o el usuario no fue encontrado.
+              //console.error("Token inválido o usuario no encontrado"); // Muestra un error si el token es inválido o el usuario no fue encontrado.
               getActions().closeSession(); // Llama a la función para cerrar la sesión del usuario.
               return { isAuthenticated: false }; // Retorna un objeto indicando que la autenticación falló.
             }
           } else {
-            console.error("Error validando el token", await response.text()); // Muestra un error si la validación del token falla.
+            //console.error("Error validando el token", await response.text()); // Muestra un error si la validación del token falla.
             getActions().closeSession(); // Llama a la función para cerrar la sesión del usuario.
             return { isAuthenticated: false }; // Retorna un objeto indicando que la autenticación falló.
           }
         } catch (error) {
-          console.error("Error en la función validateToken:", error); // Muestra un error si ocurre una excepción durante la ejecución de la función.
+          //console.error("Error en la función validateToken:", error); // Muestra un error si ocurre una excepción durante la ejecución de la función.
           getActions().closeSession(); // Llama a la función para cerrar la sesión del usuario.
           return { isAuthenticated: false }; // Retorna un objeto indicando que la autenticación falló.
         }
@@ -69,7 +69,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
         if (email.trim() === "" || password.trim() === "") {
           // Verifica si el campo de email o contraseña están vacíos
-          // console.error("Por favor completa todos los campos.");
+          // //console.error("Por favor completa todos los campos.");
           return; // Detener el proceso si algún campo está vacío
         }
 
@@ -116,7 +116,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           }
           // console.log('data after setTimeout',data)
         } catch (error) {
-          // console.error(error);
+          // //console.error(error);
           throw new Error(`Error login: ${error.message}`); // Se maneja cualquier error que ocurra durante el proceso de inicio de sesión
         }
       },
@@ -157,7 +157,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           // Imprimimos el estado de la tienda después de cargar los datos (solo para depuración)
           // console.log("Store after data loaded:", store);
         } catch (error) {
-          console.error(error); // Se imprime cualquier error que ocurra durante el proceso
+          //console.error(error); // Se imprime cualquier error que ocurra durante el proceso
           // Si ocurre algún error durante el proceso, lo capturamos y lo mostramos en la consola
         }
       },
@@ -239,7 +239,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           let data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           return data.exists; // Retorna un valor booleano indicando si el usuario existe.
         } catch (error) {
-          console.error("Error checking if user exists: ", error); // Muestra un error en caso de que ocurra durante la ejecución de la función.
+          //console.error("Error checking if user exists: ", error); // Muestra un error en caso de que ocurra durante la ejecución de la función.
           return false; // Retorna false si ocurre un error, indicando que no se pudo verificar la existencia del usuario.
         }
       },
@@ -320,7 +320,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             };
           }
         } catch (error) {
-          console.error("Error al actualizar los datos:", error);
+          //console.error("Error al actualizar los datos:", error);
           return { success: false, error: error.message };
         }
       },
@@ -353,7 +353,7 @@ const getState = ({ getStore, getActions, setStore }) => {
             };
           }
         } catch (error) {
-          console.error("Error updating user activation status:", error); // Muestra un error si ocurre durante la ejecución de la función.
+          //console.error("Error updating user activation status:", error); // Muestra un error si ocurre durante la ejecución de la función.
           return { success: false, error: error.message }; // Retorna un objeto indicando que la actualización falló debido a una excepción.
         }
       },
@@ -662,7 +662,7 @@ const getState = ({ getStore, getActions, setStore }) => {
           const data = await response.json(); // Convierte la respuesta de la API a formato JSON.
           setStore({ searchResults: data }); // Almacena los resultados de la búsqueda en el estado global.
         } catch (error) {
-          console.error("Error searching users:", error); // Muestra un error si ocurre durante la ejecución de la función.
+          //console.error("Error searching users:", error); // Muestra un error si ocurre durante la ejecución de la función.
         }
       },
     },

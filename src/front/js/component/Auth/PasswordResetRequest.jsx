@@ -68,7 +68,7 @@ const PasswordResetRequest = () => {
                 // Limpia cualquier mensaje de éxito previo.
             }
         } catch (error) {
-            console.error('Error reset request', error);
+            //console.error('Error reset request', error);
             // Maneja cualquier error que ocurra durante la solicitud y lo registra en la consola.
 
             setError('An error occurred while requesting password reset');

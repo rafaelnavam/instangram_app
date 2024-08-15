@@ -75,7 +75,7 @@ const ProfileOtherUser = () => {
                 setUserPosts(response.posts);
                 // Si la solicitud es exitosa, almacena los datos del usuario y sus publicaciones en los estados correspondientes.
             } else {
-                console.error(response.error);
+                //console.error(response.error);
                 // Si hay un error, lo muestra en la consola.
             }
         };

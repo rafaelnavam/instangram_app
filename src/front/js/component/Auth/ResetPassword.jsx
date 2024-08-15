@@ -68,7 +68,7 @@ const ResetPassword = () => {
                     // Si la verificación falla, muestra el mensaje de error recibido del servidor.
                 }
             } catch (error) {
-                console.error('Error verifying token', error);
+                //console.error('Error verifying token', error);
                 // Registra cualquier error que ocurra durante la verificación del token en la consola.
 
                 setError('Invalid or expired token');
@@ -130,7 +130,7 @@ const ResetPassword = () => {
                 // Limpia cualquier mensaje de éxito previo.
             }
         } catch (error) {
-            console.error('Error reset request', error);
+            //console.error('Error reset request', error);
             // Maneja cualquier error que ocurra durante la solicitud de restablecimiento y lo registra en la consola.
 
             setError('An error occurred while resetting password');

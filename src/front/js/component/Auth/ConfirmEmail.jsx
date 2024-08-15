@@ -61,7 +61,7 @@ function ConfirmarEmail() {
         })
 
         .catch(error => {
-          console.error('Error al conectar al servidor:', error);
+          //console.error('Error al conectar al servidor:', error);
           // Si ocurre un error en cualquier parte del proceso de fetch, lo registra en la consola.
 
           setIsConfirmed(false);

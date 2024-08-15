@@ -102,7 +102,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
             actions.getUserPosts(); // Volver a cargar los posts después de eliminar
             // Si la eliminación es exitosa, restablece la vista y recarga las publicaciones.
         } else {
-            console.error(response.error);
+            //console.error(response.error);
             // Si hay un error, lo muestra en la consola.
         }
     };
