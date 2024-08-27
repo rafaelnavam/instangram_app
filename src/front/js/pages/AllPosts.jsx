@@ -4,8 +4,10 @@ import React, { useEffect, useContext, useState } from 'react';
 import { Context } from '../store/appContext.js';
 // Importa el contexto global de la aplicación.
 
-import { Container, Card, Image, Carousel } from 'react-bootstrap';
+import { Container, Card, Image, Carousel, Alert } from 'react-bootstrap';
 // Importa componentes de React Bootstrap para construir la interfaz de usuario: Container, Card, Image, Carousel.
+
+import { BounceLoader } from 'react-spinners';
 
 import { useNavigate } from 'react-router-dom';
 // Importa el hook useNavigate de react-router-dom para la navegación.
@@ -40,6 +42,14 @@ const AllPosts = () => {
 
     const [carouselIndex, setCarouselIndex] = useState({});
     // Estado para manejar el índice activo de los carruseles de imágenes en las publicaciones.
+
+    const [showModal, setShowModal] = useState(true);
+
+    useEffect(() => {
+        setTimeout(() => {
+            setShowModal(false);
+        }, 5000);
+    }, []);
 
     const navigate = useNavigate();
     // Inicializa el hook useNavigate para redirigir al usuario a diferentes rutas.
@@ -106,6 +116,29 @@ const AllPosts = () => {
         navigate(`/profile/${username}`);
         // Redirige al perfil del usuario cuyo nombre se ha hecho clic.
     };
+
+    const renderLoadingModal = () => (
+        <div className={styles["custom-modal-body"]}>
+            {showModal && (
+                <div id={styles["custom-overlay"]} className={styles["custom-overlay-context"]}>
+                    <div className={styles["custom-modal"]}>
+                        <BounceLoader
+                            color="#0094f6a3"
+                            cssOverride={{}}
+                            size={300}
+                            className={styles.BounceLoader}
+
+                        />
+                        <div className={styles.divMessage}>
+                            <h5 className={styles.message}>La data puede demorar algunos segundos en cargar. Por favor, no se vaya.</h5>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
     if (!store.allposts.length) {
         return (
             <Container className={styles.postsContainer}>
@@ -135,6 +168,7 @@ const AllPosts = () => {
                         </Card>
                     ))}
                 </div>
+                {showModal && renderLoadingModal()}
             </Container>
         );
     }
@@ -206,6 +240,7 @@ const AllPosts = () => {
                     </Card>
                 ))}
             </div>
+            {showModal && renderLoadingModal()}
         </Container>
     );
 };

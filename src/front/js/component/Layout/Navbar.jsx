@@ -80,12 +80,19 @@ const NavigationBar = () => {
         // Limpia el temporizador al desmontar el componente o cambiar la consulta de búsqueda.
     }, [searchQuery]);
 
-    const handleSearchChange = (e) => {
-        setSearchQuery(e.target.value);
-        // Actualiza el estado de la consulta de búsqueda con el valor ingresado por el usuario.
+    const validateSearchQuery = (query) => {
+        const regex = /^([a-zA-Z0-9\s-_\.]*)$/; // permitir cadenas vacías
+        return regex.test(query);
+    };
 
-        setIsDropdownOpen(true);
-        // Abre el dropdown de resultados de búsqueda.
+    const handleSearchChange = (e) => {
+        const query = e.target.value;
+        if (validateSearchQuery(query)) {
+            setSearchQuery(query);
+            setIsDropdownOpen(true);
+        } else {
+            // handle invalid input, e.g., display an error message
+        }
     };
 
     const handleUserClick = (username) => {

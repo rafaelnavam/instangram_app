@@ -14,6 +14,9 @@ import styles from './LoginRegister.module.css'; // Importa los estilos CSS espe
 
 import googleLogo from '../../../../../public/images/google-color-svgrepo-com.png'; // Importa el logo de Google para usarlo en los botones de autenticación.
 
+import PasswordStrengthMeter from './PasswordStrengthMeter.jsx';
+
+
 const LoginRegister = () => { // Define el componente funcional LoginRegister.
     const { actions, store } = useContext(Context); // Usa el contexto global para acceder a las acciones y el store de la aplicación.
     const navigate = useNavigate(); // Hook para la navegación entre rutas.
@@ -80,15 +83,15 @@ const LoginRegister = () => { // Define el componente funcional LoginRegister.
         }
 
 
-        // // Validación de la contraseña
-        // const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=*])(?=.*[0-9a-zA-Z]).{8,}$/;
-        // if (!passwordRegex.test(formDataRegister.password)) {
-        //     setErrorMessageRegister("Password must be at least 8 characters long, contain an uppercase letter, a number, and a special character (#, @, $, %, ^, &, +, =, *).");
-        //     setTimeout(() => {
-        //         setErrorMessageRegister("")
-        //     }, 5000);
-        //     return;
-        // }
+        // Validación de la contraseña
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=*])(?=.*[0-9a-zA-Z]).{8,}$/;
+        if (!passwordRegex.test(formDataRegister.password)) {
+            setErrorMessageRegister("Password must be at least 8 characters long, contain an uppercase letter, a number, and a special character (#, @, $, %, ^, &, +, =, *).");
+            setTimeout(() => {
+                setErrorMessageRegister("")
+            }, 5000);
+            return;
+        }
 
         if (formDataRegister.password !== formDataRegister.confirmPassword) { // Verifica si las contraseñas coinciden.
             setErrorMessageRegister("Las contraseñas no coinciden.");
@@ -384,18 +387,29 @@ const LoginRegister = () => { // Define el componente funcional LoginRegister.
                                     >
                                         <i className={showPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye"}></i>
                                     </button>
+                                    <PasswordStrengthMeter password={formDataRegister.password} />
+
                                 </div>
                             </Form.Group>
                             <Form.Group controlId="formRegisterConfirmPassword">
                                 <Form.Label>Confirmar Contraseña *</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    name="confirmPassword"
-                                    value={formDataRegister.confirmPassword}
-                                    onChange={handleChangeRegister}
-                                    className={styles.input}
-                                    required
-                                />
+                                <div className={styles.passwordContainer}>
+                                    <Form.Control
+                                        type={showPassword ? "text" : "password"}
+                                        name="confirmPassword"
+                                        value={formDataRegister.confirmPassword}
+                                        onChange={handleChangeRegister}
+                                        className={styles.input}
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className={styles.passwordToggle}
+                                        onClick={togglePasswordVisibility}
+                                    >
+                                        <i className={showPassword ? "fa-solid fa-eye-slash" : "fa-solid fa-eye"}></i>
+                                    </button>
+                                </div>
                             </Form.Group>
                             <Button type="submit" className={styles.registerButton}>
                                 REGISTRARSE

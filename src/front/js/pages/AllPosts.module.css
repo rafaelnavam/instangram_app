@@ -144,3 +144,186 @@
     font-size: 12px;
     z-index: 1;
 }
+
+#custom-overlay {
+    position: fixed;
+    z-index: 1050;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transform: translate3d(0, 0, 0);
+    /* background-color: #6c757d63; */
+    color: var(--neutral-white);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+#custom-overlay a {
+    color: var(--neutral-white);
+}
+
+#custom-overlay .custom-modal {
+    font-family: "HelveticaNeue", "HelveticaNeue-Light", "Helvetica Neue Light", helvetica, arial, sans-serif;
+    font-size: 14px;
+    text-align: center;
+    box-sizing: border-box;
+    width: 90%;
+    max-width: 1200px;
+    background-color: var(--neutral-light-gray);
+    padding: 20px;
+    border-radius: 8px;
+    position: relative;
+    margin: auto;
+
+}
+
+.custom-modal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.divMessage {
+    width: 200px;
+    margin: auto;
+    bottom: 14rem;
+    position: relative;
+    font-weight: bold;
+}
+
+.message {
+
+    font-weight: bold;
+}
+
+.BounceLoader {
+    margin-bottom: 20px;
+}
+
+.BounceLoader {
+    border: 2px solid gray;
+    border-top: 2px solid #0095f6;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 3s linear infinite;
+}
+
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+#custom-overlay .custom-modal-header {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+#custom-overlay .custom-modal-body {
+    font-size: 16px;
+    color: var(--neutral-dark);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#custom-overlay .custom-close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 24px;
+    color: var(--neutral-white);
+}
+
+#custom-overlay .custom-close-button:hover {
+    color: #ccc;
+}
+
+.custom-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.header-content i {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.header-content h2 {
+    font-size: 24px;
+    margin: 0;
+}
+
+/* Para pantallas pequeñas (móviles) */
+@media only screen and (max-width: 480px) {
+    #custom-overlay .custom-modal {
+        width: 90%;
+        max-width: 300px;
+        padding: 15px;
+    }
+
+    #custom-overlay .custom-modal-body {
+        font-size: 14px;
+    }
+}
+
+/* Para pantallas medianas (tabletas) */
+@media only screen and (min-width: 481px) and (max-width: 768px) {
+    #custom-overlay .custom-modal {
+        width: 90%;
+        max-width: 600px;
+        padding: 18px;
+    }
+
+    #custom-overlay .custom-modal-body {
+        font-size: 15px;
+    }
+}
+
+/* Para pantallas grandes (escritorios) */
+@media only screen and (min-width: 769px) {
+    #custom-overlay .custom-modal {
+        width: 90%;
+        max-width: 1200px;
+        padding: 20px;
+    }
+
+    #custom-overlay .custom-modal-body {
+        font-size: 16px;
+    }
+}
+
+.alert {
+    font-size: 1rem;
+    line-height: 1.5;
+}

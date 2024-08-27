@@ -84,7 +84,7 @@ const PasswordResetRequest = () => {
 
             <div className={styles.container}>
                 <div className={styles['password-reset-request']}>
-                    <h2 className={styles.h2}>Forgot Password</h2>
+                    <h2 className={styles.h2}>Has olvidado tu contraseña</h2>
                     <Form onSubmit={handleSubmit} className={styles.form}>
                         <Form.Group>
                             <Form.Label className={styles.label}>Email:</Form.Label>
@@ -96,7 +96,7 @@ const PasswordResetRequest = () => {
                                 className={styles.input}
                             />
                         </Form.Group>
-                        <Button variant="primary" type="submit" className={styles.button}>Send Reset Email</Button>
+                        <Button variant="primary" type="submit" className={styles.button}>Enviar correo electrónico de reinicio</Button>
                     </Form>
                     {message && <Alert variant="success" className={styles.message}>{message}</Alert>}
                     {error && <Alert variant="danger" className={styles.error}>{error}</Alert>}

@@ -13,6 +13,9 @@ import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import styles from "./ResetPassword.module.css";
 // Importa los estilos CSS específicos para el componente ResetPassword.
 
+import PasswordStrengthMeter from './PasswordStrengthMeter.jsx';
+
+
 function useQuery() {
     return new URLSearchParams(useLocation().search);
     // Esta función personalizada utiliza useLocation para obtener la búsqueda actual de la URL (lo que viene después del signo "?").
@@ -83,6 +86,15 @@ const ResetPassword = () => {
         e.preventDefault();
         // Previene el comportamiento predeterminado del formulario, que es recargar la página.
 
+        // Validación de la contraseña
+        const passwordRegex = /^(?=.*[A-Z])(?=.*[@#$%^&+=*])(?=.*[0-9a-zA-Z]).{8,}$/;
+        if (!passwordRegex.test(password)) {
+            setError('Password must be at least 8 characters long, contain an uppercase letter, a number, and a special character (#, @, $, %, ^, &, +, =, *).');
+            setTimeout(() => {
+                setError("")
+            }, 5000);
+            return;
+        }
         if (password !== confirmPassword) {
             setError('Passwords do not match');
             // Si las contraseñas no coinciden, muestra un mensaje de error.
@@ -161,10 +173,12 @@ const ResetPassword = () => {
 
             <div className={styles.container}>
                 <div className={styles.resetPassword}>
-                    <h2 className={styles.h2}>Reset Password</h2>
+                    <h2 className={styles.h2}>Reinicio de Contraseña</h2>
                     <Form onSubmit={handleSubmit} className={styles.form}>
+                        <PasswordStrengthMeter password={password} />
+
                         <Form.Group>
-                            <Form.Label className={styles.label}>New Password:</Form.Label>
+                            <Form.Label className={styles.label}>Nueva Contraseña</Form.Label>
                             <div className={styles.passwordContainer}>
                                 <Form.Control
                                     type={showPassword ? "text" : "password"}
@@ -183,7 +197,7 @@ const ResetPassword = () => {
                             </div>
                         </Form.Group>
                         <Form.Group>
-                            <Form.Label className={styles.label}>Confirm Password:</Form.Label>
+                            <Form.Label className={styles.label}>Confirmar Contraseña:</Form.Label>
                             <div className={styles.passwordContainer}>
                                 <Form.Control
                                     type={showConfirmPassword ? "text" : "password"}
@@ -201,7 +215,7 @@ const ResetPassword = () => {
                                 </button>
                             </div>
                         </Form.Group>
-                        <Button variant="primary" type="submit" className={styles.button}>Reset Password</Button>
+                        <Button variant="primary" type="submit" className={styles.button}>Enviar nueva contraseña</Button>
                     </Form>
                     {message && <Alert variant="success" className={styles.message}>{message}</Alert>}
                     {error && <Alert variant="danger" className={styles.error}>{error}</Alert>}

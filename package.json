@@ -104,6 +104,7 @@
     "react-router-dom": "^6.3.0",
     "react-scroll": "^1.9.0",
     "react-slick": "^0.30.2",
+    "react-spinners": "^0.14.1",
     "react-to-print": "^2.15.1",
     "reactstrap": "^9.2.2",
     "slick-carousel": "^1.8.1",
