@@ -240,7 +240,6 @@ const AllPosts = () => {
                     </Card>
                 ))}
             </div>
-            {showModal && renderLoadingModal()}
         </Container>
     );
 };
