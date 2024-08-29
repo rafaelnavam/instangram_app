@@ -33,6 +33,9 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), default=False)  # Columna booleana para indicar si el usuario está activo.
     name = db.Column(db.String(80), nullable=True)  # Columna para el nombre del usuario, opcional.
     google_id = db.Column(db.String(250), nullable=True)  # Columna para almacenar el ID de Google, opcional.
+    is_guest = db.Column(db.Boolean(), default=False, nullable=True)
+    role = db.Column(db.String(20), nullable=True)
+    phone = db.Column(db.String(20), nullable=True)  # Nuevo campo de teléfono
     last_name = db.Column(db.String(80), nullable=True)  # Columna para el apellido del usuario, opcional.
     username = db.Column(db.String(80), nullable=True)  # Columna para el nombre de usuario, opcional.
     registration_date = db.Column(db.DateTime, default=datetime.utcnow)  # Fecha de registro con valor por defecto la fecha actual.
