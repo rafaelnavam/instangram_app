@@ -30,6 +30,11 @@ import string
 import requests
 
 
+import cloudinary
+import cloudinary.uploader
+
+
+import logging
 
 
 from .booking_service import generate_confirmation_token_email, confirm_token_email, send_email, allowed_file, optimize_image,  process_file
@@ -57,7 +62,16 @@ CORS(api)  # Habilitar CORS para permitir solicitudes cruzadas desde el frontend
 #la inicialización de JWTManager está en la carpeta app.py despues de la declaración del servidor Flask
 jwt = JWTManager()  # Inicialización del JWTManager para manejar la generación y verificación de tokens JWT
 
-
+# Configuración del registro de logs
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        # Guarda los logs en el archivo
+        logging.FileHandler('ecommers_log.log'),
+        logging.StreamHandler()  # Muestra los logs en la consola
+    ]
+)
 
 
 @api.route('/user', methods=['GET'])
@@ -400,9 +414,11 @@ def upload_img_profile():
             return jsonify({'error': 'User not found'}), 404  # Si el usuario no existe, devuelve error
         
         if file and allowed_file(file.filename):  # Verifica si el archivo está presente y tiene un formato permitido
-            file_data = file.read()  # Lee los datos del archivo
+            # file_data = file.read()  # Lee los datos del archivo
+            folder = f"instagram-example/user_{user_id}/profile_images"
+            img_url = upload_file_to_cloudinary(file, folder)
             
-            new_img = ProfileImage(img_data=file_data)  # Crea un nuevo registro en la base de datos con los datos del archivo
+            new_img = ProfileImage(img_url=img_url) # Crea un nuevo registro en la base de datos con los datos del archivo
             db.session.add(new_img)
             user.profile_image = new_img
             db.session.commit()  # Guarda los cambios en la base de datos
@@ -432,12 +448,14 @@ def update_profile_image():
             return jsonify({'error': 'User not found'}), 404  # Si el usuario no existe, devuelve error
         
         if file and allowed_file(file.filename):  # Verifica si el archivo está presente y tiene un formato permitido
-            file_data = file.read()  # Lee los datos del archivo
+            # file_data = file.read()  # Lee los datos del archivo
+            folder = f"instagram-example/user_{user_id}/profile_images"
+            img_url = upload_file_to_cloudinary(file, folder)
 
         if user.profile_image:
-            user.profile_image.img_data = file_data
+                user.profile_image.img_url = img_url
         else:
-            new_image = ProfileImage(img_data=file_data)
+            new_image = ProfileImage(img_url=img_url)
             db.session.add(new_image)
             user.profile_image = new_image
         db.session.commit()  # Guarda los cambios en la base de datos
@@ -456,9 +474,16 @@ def delete_profile_image():
         if not user:
             return jsonify({'error': 'User not found'}), 404  # Si el usuario no existe, devuelve error
         
-        if user.profile_image:
-            db.session.delete(user.profile_image)
-            db.session.commit()  # Guarda los cambios en la base de datos
+        # Eliminar de Cloudinary si existe URL
+        cloudinary_deleted = False
+        if user.profile_image.img_url:
+            try:
+                cloudinary_deleted = delete_file_from_cloudinary(user.profile_image.img_url)
+                if not cloudinary_deleted:
+                    logging.warning(f"Cloudinary deletion failed for user {user_id}")
+            except Exception as cloudinary_error:
+                logging.error(f"Error deleting from Cloudinary: {str(cloudinary_error)}")
+        
         return jsonify({'message': 'Profile image deleted successfully'}), 200
     except Exception as e:
         db.session.rollback()  # Realiza un rollback en la base de datos para evitar inconsistencias debido al error
@@ -484,11 +509,36 @@ def create_post():
         db.session.add(new_post)
         db.session.commit()
 
-        # Subir imágenes
+        # # Subir imágenes
+        # files = request.files.getlist('images')
+        # for file in files:
+        #     new_image = PostImage(post_id=new_post.id, img_data=file.read())
+        #     db.session.add(new_image)
+
+
+        # Subir imágenes a Cloudinary
         files = request.files.getlist('images')
         for file in files:
-            new_image = PostImage(post_id=new_post.id, img_data=file.read())
+            # Crear estructura de carpetas: instagram-example/user_{id}/post_{id}
+            folder_path = f"instagram-example/user_{current_user_id}/post_{new_post.id}"
+            
+            # Subir a Cloudinary
+            img_url = upload_file_to_cloudinary(file, folder_path)
+            
+            # Extraer public_id de la URL para futuras eliminaciones
+            parts = img_url.split('/')
+            public_id_with_extension = '/'.join(parts[parts.index('upload')+2:])
+            public_id = os.path.splitext(public_id_with_extension)[0]
+
+            # Guardar en base de datos
+            new_image = PostImage(
+                post_id=new_post.id,
+                img_url=img_url,
+                public_id=public_id
+            )
             db.session.add(new_image)
+
+
         db.session.commit()
 
         return jsonify({'message': 'Post created successfully', 'post': new_post.serialize()}), 201
@@ -516,18 +566,47 @@ def edit_post(post_id):
         post.location = data.get('location', post.location)
         post.status = data.get('status', post.status)
 
-        # Subir nuevas imágenes
+        # # Subir nuevas imágenes
+        # files = request.files.getlist('images')
+        # if files:
+        #     # Borrar las imágenes antiguas
+        #     for image in post.images:
+        #         db.session.delete(image)
+
+        #     # Subir nuevas imágenes
+        #     for file in files:
+        #         new_image = PostImage(post_id=post.id, img_data=file.read())
+        #         db.session.add(new_image)
+        
+        # Subir nuevas imágenes si existen
         files = request.files.getlist('images')
         if files:
-            # Borrar las imágenes antiguas
+            # Eliminar imágenes antiguas de Cloudinary y la base de datos
             for image in post.images:
+                if image.public_id:
+                    delete_file_from_cloudinary(image.img_url)
                 db.session.delete(image)
 
-            # Subir nuevas imágenes
+            # Subir nuevas imágenes a Cloudinary
             for file in files:
-                new_image = PostImage(post_id=post.id, img_data=file.read())
+                folder_path = f"instagram-example/user_{current_user_id}/post_{post.id}"
+                img_url = upload_file_to_cloudinary(file, folder_path)
+                
+                # Extraer public_id
+                parts = img_url.split('/')
+                public_id_with_extension = '/'.join(parts[parts.index('upload')+2:])
+                public_id = os.path.splitext(public_id_with_extension)[0]
+                
+                # Guardar en base de datos
+                new_image = PostImage(
+                    post_id=post.id,
+                    img_url=img_url,
+                    public_id=public_id
+                )
                 db.session.add(new_image)
-        
+
+
+
         db.session.commit()
         return jsonify({'message': 'Post updated successfully', 'post': post.serialize()}), 200
     except Exception as e:
@@ -546,6 +625,15 @@ def delete_post(post_id):
             return jsonify({'error': 'Post not found or not authorized'}), 404
 
         post.status = 'deleted'  # Cambia el estado a 'deleted'
+
+        # Eliminar imágenes de Cloudinary
+        for image in post.images:
+            if image.public_id:
+                delete_file_from_cloudinary(image.img_url)
+        
+        # Eliminar post de la base de datos
+        db.session.delete(post)
+
         db.session.commit()
         return jsonify({'message': 'Post marked as deleted successfully'}), 200
     except Exception as e:
@@ -653,3 +741,116 @@ def search_users():
     response = [user.serialize() for user in users]
     return jsonify(response), 200
 
+
+
+#-------------------------------------------------ENPOINT PARA SUBIR IMAGENES A CLOUDINARY-----------------------------------------------------------
+"""
+Configuracion de coudinary
+"""
+
+cloudinary.config( 
+    cloud_name=os.getenv('CLOUDINARY_NAME'), 
+    api_key=os.getenv('CLOUDINARY_API_KEY'), 
+    api_secret=os.getenv('CLOUDINARY_SECRET_KEY'), 
+    secure=True
+)
+
+def upload_file_to_cloudinary(file, folder_name="uploads"):
+    """
+    Sube un archivo a Cloudinary y retorna la URL segura (secure_url).
+    Maneja imágenes o documentos con carpeta dinámica.
+    
+    Args:
+        file: Archivo a subir (FileStorage)
+        folder_name: Nombre de la carpeta en Cloudinary (dinámico)
+    
+    Returns:
+        str: URL segura del archivo subido
+    """
+    try:
+        logging.info("Iniciando subida de archivo a Cloudinary...")
+
+        # Verificar que el archivo no esté vacío
+        if not file or file.filename == "":
+            error_msg = "Archivo vacío o no enviado"
+            logging.error(error_msg)
+            raise ValueError(error_msg)
+
+        logging.info(f"Archivo recibido: {file.filename}")
+
+        # Asegurar que el nombre del archivo sea seguro
+        filename = secure_filename(file.filename)
+        
+        # Identificar tipo de archivo por el content_type
+        if "image" in file.content_type.lower():
+            resource_type = "image"
+            transformations = [{"fetch_format": "auto", "quality": "auto"}]
+        else:
+            resource_type = "raw"
+            transformations = None
+
+        # Configurar parámetros de subida a Cloudinary con carpeta dinámica
+        upload_params = {
+            "folder": folder_name,
+            "resource_type": resource_type,
+            "use_filename": True,
+            "unique_filename": True,
+            "overwrite": False
+        }
+
+        if transformations:
+            upload_params["transformation"] = transformations
+
+        # Guardar el archivo en /tmp con su nombre
+        file_path = os.path.join("/tmp", filename)
+        file.save(file_path)
+
+        # Verificar que el archivo no esté vacío después de guardarlo
+        if os.path.getsize(file_path) == 0:
+            error_msg = "El archivo está vacío"
+            logging.error(error_msg)
+            raise ValueError(error_msg)
+
+        # Subir a Cloudinary utilizando la ruta local
+        upload_result = cloudinary.uploader.upload(file_path, **upload_params)
+
+        # (Opcional) Borrar el archivo temporal
+        os.remove(file_path)
+
+        logging.info(f"Subida completada. URL segura: {upload_result['secure_url']}")
+        return upload_result["secure_url"]
+
+    except Exception as e:
+        logging.error(f"Error al subir el archivo a Cloudinary: {str(e)}")
+        # Limpiar archivo temporal si existe
+        if 'file_path' in locals() and os.path.exists(file_path):
+            os.remove(file_path)
+        raise e
+    
+def delete_file_from_cloudinary(img_url):
+    """
+    Elimina un archivo de Cloudinary basado en su URL
+    :param img_url: URL completa del archivo en Cloudinary
+    :return: True si se eliminó correctamente, False si no
+    """
+    try:
+        # Extraer el public_id de la URL
+        # La URL de Cloudinary tiene formato: https://res.cloudinary.com/<cloud_name>/<resource_type>/<type>/<version>/<public_id>.<format>
+        parts = img_url.split('/')
+        public_id_with_extension = '/'.join(parts[parts.index('upload')+2:])
+        public_id = os.path.splitext(public_id_with_extension)[0]
+        
+        # Eliminar el archivo
+        result = cloudinary.uploader.destroy(public_id)
+        
+        if result.get('result') == 'ok':
+            logging.info(f"Archivo eliminado de Cloudinary: {public_id}")
+            return True
+        else:
+            logging.error(f"Error al eliminar de Cloudinary: {result}")
+            return False
+            
+    except Exception as e:
+        logging.error(f"Excepción al eliminar de Cloudinary: {str(e)}")
+        return False
+    

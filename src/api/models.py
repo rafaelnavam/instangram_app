@@ -8,13 +8,15 @@ db = SQLAlchemy()
 # Tabla para cargar la imagen de perfil de usuario
 class ProfileImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    img_data = db.Column(LargeBinary, nullable=False)
+    # img_data = db.Column(LargeBinary, nullable=False)
+    img_url = db.Column(db.String(500), nullable=False)  # Ahora almacenamos la URL de Cloudinary
 
-    user = db.relationship('User', back_populates='profile_image', uselist=False)
+    
+    user = db.relationship('User', back_populates='profile_image', uselist=False)  # Relación uno a uno
 
-    @property
-    def img_url(self):
-        return f"data:image/jpeg;base64,{base64.b64encode(self.img_data).decode('utf-8')}"
+    # @property
+    # def img_url(self):
+    #     return f"data:image/jpeg;base64,{base64.b64encode(self.img_data).decode('utf-8')}"
 
     def __repr__(self):
         return '<ProfileImage %r>' % self.id
@@ -60,19 +62,20 @@ class User(db.Model):
 
 # Tabla de Imágenes de Publicaciones
 class PostImage(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-    img_data = db.Column(LargeBinary, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)  # Clave primaria para la tabla PostImage.
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)  # Clave externa que referencia a la tabla Post.
+    # img_data = db.Column(LargeBinary, nullable=False)  # Columna para almacenar los datos de la imagen en formato binario.
+    img_url = db.Column(db.String(500), nullable=False)  # Almacenamos la URL de Cloudinary
+    public_id = db.Column(db.String(300))  # Almacenamos el public_id de Cloudinary para futura
+    # @property
+    # def img_url(self):  # Propiedad para obtener la URL de la imagen en formato base64.
+    #     return f"data:image/jpeg;base64,{base64.b64encode(self.img_data).decode('utf-8')}"  # Codifica la imagen en base64 y la convierte en una URL de datos.
 
-    @property
-    def img_url(self):
-        return f"data:image/jpeg;base64,{base64.b64encode(self.img_data).decode('utf-8')}"
-
-    def serialize(self):
+    def serialize(self):  # Método para serializar la imagen de la publicación a un formato JSON.
         return {
-            "id": self.id,
-            "post_id": self.post_id,
-            "img_url": self.img_url
+            "id": self.id,  # Incluye el ID de la imagen.
+            "post_id": self.post_id,  # Incluye el ID de la publicación a la que pertenece la imagen.
+            "img_url": self.img_url  # Incluye la URL de la imagen en formato base64.
         }
 
 # Tabla de Publicaciones

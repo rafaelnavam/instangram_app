@@ -95,8 +95,8 @@ def setup_commands(app):
             # Add fake images to the post
             for _ in range(fake.random_int(min=1, max=3)):
                 img_url = "https://picsum.photos/200/300"
-                img_data = requests.get(img_url).content
-                post_image = PostImage(post_id=post.id, img_data=img_data)
+                # img_data = requests.get(img_url).content
+                post_image = PostImage(post_id=post.id, img_url=img_url)
                 db.session.add(post_image)
             db.session.commit()
         print(f"{count} posts created.")
