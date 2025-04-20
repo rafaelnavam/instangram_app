@@ -1,16 +1,9 @@
 import React, { useEffect, useContext, useState } from 'react';
+// Importa React junto con los hooks useEffect, useContext y useState para gestionar el estado y los efectos secundarios.
 import { Context } from '../store/appContext.js';
 import styles from './AllPosts.module.css';
 import { Container, Card, Image, Carousel } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
 import UserPic from '../../img/profile-circle-svgrepo-com.png'
-
-import { Context } from '../store/appContext.js';
-// Importa el contexto global de la aplicación.
-
-import { Container, Card, Image, Carousel, Alert } from 'react-bootstrap';
-// Importa componentes de React Bootstrap para construir la interfaz de usuario: Container, Card, Image, Carousel.
-
 import { BounceLoader } from 'react-spinners';
 
 import { useNavigate } from 'react-router-dom';
@@ -21,12 +14,6 @@ import Skeleton from 'react-loading-skeleton';
 
 import 'react-loading-skeleton/dist/skeleton.css';
 // Importa los estilos CSS de Skeleton.
-
-import styles from './AllPosts.module.css';
-// Importa los estilos CSS específicos para el componente AllPosts.
-
-import UserPic from '../../../front/img/profile-circle-svgrepo-com.png';
-// Importa una imagen predeterminada para el perfil del usuario.
 
 const AllPosts = () => {
     const { actions, store } = useContext(Context);
@@ -120,6 +107,63 @@ const AllPosts = () => {
         navigate(`/profile/${username}`);
         // Redirige al perfil del usuario cuyo nombre se ha hecho clic.
     };
+
+    const renderLoadingModal = () => (
+        <div className={styles["custom-modal-body"]}>
+            {showModal && (
+                <div id={styles["custom-overlay"]} className={styles["custom-overlay-context"]}>
+                    <div className={styles["custom-modal"]}>
+                        <BounceLoader
+                            color="#0094f6a3"
+                            cssOverride={{}}
+                            size={300}
+                            className={styles.BounceLoader}
+
+                        />
+                        <div className={styles.divMessage}>
+                            <h5 className={styles.message}>La data puede demorar algunos segundos en cargar. Por favor, no se vaya.</h5>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+
+    if (!store.allposts.length) {
+        return (
+            <Container className={styles.postsContainer}>
+                <div className={styles.scrollContainer}>
+                    {[1, 2, 3, 4, 5].map((_, index) => (
+                        <Card key={index} className={styles.postCard}>
+                            <Card.Header className={styles.cardHeader}>
+                                <div className={styles.authorInfo}>
+                                    <Skeleton height={40} width={40} />
+                                    <div>
+                                        <Skeleton height={20} width={100} />
+                                        <Skeleton height={20} width={100} />
+                                    </div>
+                                </div>
+                            </Card.Header>
+                            <Card.Body className={styles.cardBody}>
+                                <Skeleton height={200} width={300} />
+                                <Skeleton height={20} width={200} />
+                                <div className={styles.postActions}>
+                                    <Skeleton height={20} width={20} />
+                                    <Skeleton height={20} width={20} />
+                                    <Skeleton height={20} width={20} />
+                                </div>
+                                <Skeleton height={20} width={200} />
+                                <Skeleton height={20} width={200} />
+                            </Card.Body>
+                        </Card>
+                    ))}
+                </div>
+                {showModal && renderLoadingModal()}
+            </Container>
+        );
+    }
+
     return (
         <Container className={styles.postsContainer}>
             <div className={styles.scrollContainer}>
