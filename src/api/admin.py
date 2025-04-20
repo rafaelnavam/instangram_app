@@ -6,17 +6,17 @@ from flask_admin.contrib.sqla import ModelView
 
 def setup_admin(app):
 
-    # return """<!DOCTYPE html>
-    #             <html lang="es">
-    #             <head>
-    #                 <meta charset="UTF-8" />
-    #                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    #                 <title>403 - Acceso Denegado</title>
-    #             </head>
-    #             <body>
-    #                 <h1>403 - Acceso Denegado</h1>
-    #             </body>
-    #             </html>"""
+    return """<!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>403 - Acceso Denegado</title>
+                </head>
+                <body>
+                    <h1>403 - Acceso Denegado</h1>
+                </body>
+                </html>"""
 
 
     app.secret_key = os.environ.get('FLASK_APP_KEY', 'sample key')

@@ -31,17 +31,17 @@ def generate_sitemap(app):
                 links.append(url)
 
     links_html = "".join(["<li><a href='" + y + "'>" + y + "</a></li>" for y in links])
-    # return """<!DOCTYPE html>
-    #             <html lang="es">
-    #             <head>
-    #                 <meta charset="UTF-8" />
-    #                 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    #                 <title>403 - Acceso Denegado</title>
-    #             </head>
-    #             <body>
-    #                 <h1>403 - Acceso Denegado</h1>
-    #             </body>
-    #             </html>"""
+    return """<!DOCTYPE html>
+                <html lang="es">
+                <head>
+                    <meta charset="UTF-8" />
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                    <title>403 - Acceso Denegado</title>
+                </head>
+                <body>
+                    <h1>403 - Acceso Denegado</h1>
+                </body>
+                </html>"""
 
     
     return """
