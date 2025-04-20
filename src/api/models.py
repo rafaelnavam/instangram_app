@@ -38,6 +38,7 @@ class User(db.Model):
     last_name = db.Column(db.String(80), nullable=True)  # Nullable para permitir usuarios invitados
     username = db.Column(db.String(80), nullable=True)  # Nullable para permitir usuarios invitados
     registration_date = db.Column(db.DateTime, default=datetime.utcnow)
+    role = db.Column(db.String(20), nullable=False)
     last_update_date = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     image_url = db.Column(db.String(255), nullable=True)
     profile_image_id = db.Column(db.Integer, db.ForeignKey('profile_image.id'), nullable=True)

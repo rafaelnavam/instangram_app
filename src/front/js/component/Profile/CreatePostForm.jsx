@@ -265,7 +265,7 @@ const CreatePostForm = ({ editingPost, setEditingPost, setShowCreatePostForm }) 
                         <Row className="mb-3">
                             <Col className="text-center">
                                 {croppedImages.map((croppedImage, index) => (
-                                    <img key={index} src={URL.createObjectURL(croppedImage)} alt={`Cropped ${index}`} className={styles.croppedImage} />
+                                    <img loading="lazy" key={index} src={URL.createObjectURL(croppedImage)} alt={`Cropped ${index}`} className={styles.croppedImage} />
                                 ))}
                             </Col>
                         </Row>

@@ -71,6 +71,7 @@ const AllPosts = () => {
                         <Card.Header className={styles.cardHeader}>
                             <div className={styles.authorInfo}>
                                 <Image
+                                    loading="lazy"
                                     src={post.author.profile_image_url || UserPic}
                                     roundedCircle
                                     className={styles.authorAvatar}
@@ -94,7 +95,7 @@ const AllPosts = () => {
                                     >
                                         {post.images.map((image, index) => (
                                             <Carousel.Item key={index}>
-                                                <Image src={image} className={styles.postImage} />
+                                                <Image loading="lazy" src={image} className={styles.postImage} />
                                             </Carousel.Item>
                                         ))}
                                     </Carousel>
@@ -103,7 +104,7 @@ const AllPosts = () => {
                                     </div>
                                 </div>
                             ) : (
-                                <Image src={post.images[0]} className={styles.postImage} />
+                                <Image loading="lazy" src={post.images[0]} className={styles.postImage} />
                             )}
                             <Card.Text className={styles.likes}>{post.message}</Card.Text>
                             <div className={styles.postActions}>

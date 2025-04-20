@@ -44,8 +44,9 @@ def setup_commands(app):
                 is_active=True,
                 username=f"testuser{x}",
                 name=fake.first_name(),
+                role='normal',
                 last_name=fake.last_name(),
-                image_url=fake.image_url()
+                # image_url=fake.image_url()
             )
             db.session.add(user)
             db.session.commit()
@@ -65,16 +66,41 @@ def setup_commands(app):
     def insert_users(count):
         print("Creating test users")
         for _ in range(count):
+            # Primero creamos el usuario sin imagen
             user = User(
                 email=fake.email(),
                 password="123456",
                 is_active=True,
                 username=fake.user_name(),
                 name=fake.first_name(),
+                role='normal', 
                 last_name=fake.last_name(),
-                image_url=fake.image_url()
+                image_url=None  # Este campo lo dejamos como None
             )
             db.session.add(user)
+            db.session.flush()  # Necesario para obtener el ID del usuario recién creado
+            
+            # Creamos una imagen de perfil aleatoria
+            width = fake.random_int(min=200, max=800)
+            height = fake.random_int(min=200, max=800)
+            random_id = fake.random_int(min=1, max=1000)
+            
+            # Opción 1: Usar Picsum Photos
+            img_url = f"https://picsum.photos/id/{random_id}/{width}/{height}"
+            
+            # Opción 2: Usar Unsplash (más variedad)
+            # img_url = f"https://source.unsplash.com/random/{width}x{height}/?person,face&sig={random_id}"
+            
+            # Creamos el registro de la imagen de perfil
+            profile_image = ProfileImage(
+                img_url=img_url
+            )
+            db.session.add(profile_image)
+            db.session.flush()
+            
+            # Asociamos la imagen al usuario
+            user.profile_image = profile_image
+            
         db.session.commit()
         print(f"{count} users created.")
 
@@ -94,7 +120,11 @@ def setup_commands(app):
 
             # Add fake images to the post
             for _ in range(fake.random_int(min=1, max=3)):
-                img_url = "https://picsum.photos/200/300"
+                # Genera una URL única con ID aleatorio y tamaño variable
+                random_id = fake.random_int(min=1, max=1000)
+                width = fake.random_int(min=200, max=800)
+                height = fake.random_int(min=200, max=800)
+                img_url = f"https://picsum.photos/id/{random_id}/{width}/{height}"
                 # img_data = requests.get(img_url).content
                 post_image = PostImage(post_id=post.id, img_url=img_url)
                 db.session.add(post_image)

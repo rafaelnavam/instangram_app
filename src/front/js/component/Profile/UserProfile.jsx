@@ -54,7 +54,7 @@ const UserProfile = () => {
         <Container className={styles.userProfile}>
             <Row className={styles.profileHeader}>
                 <Col xs={3} onClick={handleImageClick} className={styles.profilePicContainer}>
-                    <Image src={profileImageUrl || UserPic} roundedCircle className={styles.profilePic} />
+                    <Image loading="lazy" src={profileImageUrl || UserPic} roundedCircle className={styles.profilePic} />
                 </Col>
                 <Col xs={9}>
                     <div className={styles.userInfo}>

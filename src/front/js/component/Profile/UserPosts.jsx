@@ -103,7 +103,7 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
                     <Card className={styles.singlePostCard}>
                         <Card.Header className={styles.cardHeader}>
                             <div className={styles.authorInfo}>
-                                <Image src={store.uploadedUserData.profile_image_url || UserPic} roundedCircle className={styles.authorAvatar} />
+                                <Image loading="lazy" src={store.uploadedUserData.profile_image_url || UserPic} roundedCircle className={styles.authorAvatar} />
                                 <div>
                                     <div className={styles.authorName}>Author Name</div>
                                     <div className={styles.postLocation}>
@@ -126,12 +126,12 @@ const UserPosts = ({ setEditingPost, setShowCreatePostForm }) => {
                                 <Carousel className={styles.carousel}>
                                     {selectedPost.images.map((image, index) => (
                                         <Carousel.Item key={index}>
-                                            <Image src={image} className={styles.carouselImage} />
+                                            <Image loading="lazy" src={image} className={styles.carouselImage} />
                                         </Carousel.Item>
                                     ))}
                                 </Carousel>
                             ) : (
-                                <Image src={selectedPost.images[0]} className={styles.singlePostImage} />
+                                <Image loading="lazy" src={selectedPost.images[0]} className={styles.singlePostImage} />
                             )}
                             <div className={styles.postActions}>
                                 <div className={styles.likeContainer}>

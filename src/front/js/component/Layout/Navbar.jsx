@@ -75,6 +75,7 @@ const NavigationBar = () => {
                 <Container className={styles.navContainer}>
                     <Link to="/" className={styles.logoContainer}>
                         <img
+                            loading="lazy"
                             src={logoRojo}
                             alt="store"
                             className={`${styles.logo} ${styles.logoAnimation}`}
@@ -96,7 +97,7 @@ const NavigationBar = () => {
                             <Dropdown.Menu show className={styles.searchResultsDropdown}>
                                 {store.searchResults.map(user => (
                                     <Dropdown.Item key={user.id} onClick={() => handleUserClick(user.username)} className={styles.searchResultItem}>
-                                        <img src={user.profile_image_url || profilePic} alt={user.username} className={styles.searchResultImage} />
+                                        <img loading="lazy" src={user.profile_image_url || profilePic} alt={user.username} className={styles.searchResultImage} />
                                         <div className={styles.searchResultDetails}>
                                             <div className={styles.searchResultName}>{user.username}</div>
                                             <div className={styles.searchResultFullName}>{user.name} {user.last_name}</div>
@@ -111,7 +112,7 @@ const NavigationBar = () => {
                             <Dropdown>
                                 <Dropdown.Toggle variant="outline-light" className={styles.profileButton}>
                                     {uploadedUserData.name}
-                                    <img src={profileImageUrl} alt="User" className={styles.profileImage} />
+                                    <img loading="lazy" src={profileImageUrl} alt="User" className={styles.profileImage} />
                                 </Dropdown.Toggle>
                                 <Dropdown.Menu align="right">
                                     <Dropdown.Item as={Link} to="/my-account">Perfil</Dropdown.Item>

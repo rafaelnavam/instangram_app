@@ -6,6 +6,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 
       isAuthenticated: null,
       uploadedUserData: [],
+      uploadedUserDataToken: [],
+
       isAuthenticatedMessage: null,
       loginError: [],
       dataUser: {
@@ -32,29 +34,36 @@ const getState = ({ getStore, getActions, setStore }) => {
             method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           });
 
-          if (response.ok) {
-            const data = await response.json();
-            if (data.user) {
-              setStore({
-                isAuthenticated: true,
-                uploadedUserData: data.user, // Guarda los datos del usuario en el estado global
-              });
-              return { isAuthenticated: true };
+          const data = await response.json();
+
+          if (!response.ok) {
+            // Si la respuesta no es OK, pero viene con datos (como errores personalizados del backend)
+            if (data.error === "user_not_found") {
+              // console.error("Usuario no encontrado");
             } else {
-              console.error("Token inválido o usuario no encontrado");
-              getActions().closeSession();
-              return { isAuthenticated: false };
+              // console.error("Error validando token:", data.message || "Error desconocido");
             }
+            getActions().closeSession();
+            return { isAuthenticated: false };
+          }
+
+          if (data.success && data.user) {
+            setStore({
+              isAuthenticated: true,
+              uploadedUserDataToken: data.user,
+            });
+            return { isAuthenticated: true };
           } else {
-            console.error("Error validando el token", await response.text());
+            // console.error("Token inválido o usuario no encontrado");
             getActions().closeSession();
             return { isAuthenticated: false };
           }
         } catch (error) {
-          console.error("Error en la función validateToken:", error);
+          // console.error("Error en la función validateToken:", error);
           getActions().closeSession();
           return { isAuthenticated: false };
         }

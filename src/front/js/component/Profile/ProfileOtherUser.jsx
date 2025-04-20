@@ -91,7 +91,7 @@ const ProfileOtherUser = () => {
         <Container className={styles.userProfile}>
             <Row className={styles.profileHeader}>
                 <Col xs={3} className={styles.profilePicContainer}>
-                    <Image src={userData.profile_image_url || UserPic} roundedCircle className={styles.profilePic} />
+                    <Image loading="lazy" src={userData.profile_image_url || UserPic} roundedCircle className={styles.profilePic} />
                 </Col>
                 <Col xs={9}>
                     <h2 className={styles.username}>{userData.username}</h2>
@@ -118,7 +118,7 @@ const ProfileOtherUser = () => {
                         <Card className={styles.singlePostCard}>
                             <Card.Header className={styles.cardHeader}>
                                 <div className={styles.authorInfo}>
-                                    <Image src={userData.profile_image_url || UserPic} roundedCircle className={styles.authorAvatar} />
+                                    <Image loading="lazy" src={userData.profile_image_url || UserPic} roundedCircle className={styles.authorAvatar} />
                                     <div>
                                         <div className={styles.authorName}>{userData.username}</div>
                                         <div className={styles.postLocation}>
@@ -132,7 +132,7 @@ const ProfileOtherUser = () => {
                                     <Carousel className={styles.carousel}>
                                         {selectedPost.images.map((image, index) => (
                                             <Carousel.Item key={index}>
-                                                <Image src={image} className={styles.carouselImage} />
+                                                <Image loading="lazy" src={image} className={styles.carouselImage} />
                                             </Carousel.Item>
                                         ))}
                                     </Carousel>
@@ -176,7 +176,7 @@ const ProfileOtherUser = () => {
                                     <Carousel>
                                         {post.images.map((image, index) => (
                                             <Carousel.Item key={index}>
-                                                <Image src={image} className={styles.postImage} />
+                                                <Image loading="lazy" src={image} className={styles.postImage} />
                                             </Carousel.Item>
                                         ))}
                                     </Carousel>

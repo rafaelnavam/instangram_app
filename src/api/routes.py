@@ -246,22 +246,43 @@ def confirm_email(token):  # Función que maneja la solicitud POST para confirma
 @jwt_required()
 def validate_token():
     try:
-        user_id = get_jwt_identity()  # Obtiene el ID del usuario desde el token
-        user = User.query.get(user_id)  # Busca al usuario por su ID
-
+        # Obtiene la identidad del usuario desde el token JWT
+        user_id = get_jwt_identity()
+        
+        # Verifica si el token está a punto de expirar (opcional)
+        from flask_jwt_extended import get_jwt
+        jwt_data = get_jwt()
+        # Puedes agregar lógica adicional basada en los claims del token si es necesario
+        
+        # Busca al usuario en la base de datos
+        user = User.query.get(user_id)
+        
         if not user:
-            return jsonify({'error': 'User not found'}), 404  # Si el usuario no existe, devuelve error
+            return jsonify({
+                'success': False,
+                'message': 'Usuario no encontrado',
+                'error': 'user_not_found'
+            }), 404
 
-        # Devuelve la información básica del usuario para confirmar que el token es válido
+        # Prepara la información del usuario para la respuesta
         user_info = {
             'id': user.id,
-            'email': user.email
+            'email': user.email,
+            # Agrega aquí cualquier otro campo que necesites en el frontend
         }
-        return jsonify({'message': 'Token is valid', 'user': user_info}), 200  # Devuelve un mensaje de éxito y la información del usuario
+        
+        return jsonify({
+            'success': True,
+            'message': 'Token válido',
+            'user': user_info
+        }), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500  # En caso de error, devuelve un error interno del servidor
-
+        return jsonify({
+            'success': False,
+            'message': 'Error al validar el token',
+            'error': str(e)
+        }), 500
 #-------------------CREAR  TOKEN LOGIN--------------------------------------------------------------------------
 
 """CREACION DE TOKEN CON GOOGLE ACCOUNT"""
@@ -290,7 +311,7 @@ def create_normal_user_token():
             # Autenticación con Google
             if existing_user.google_id == google_id:
                 expires = timedelta(hours=1)
-                user_id = existing_user.id
+                user_id = str(existing_user.id)
                 access_token = create_access_token(identity=user_id, expires_delta=expires)
                 return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200
             else:
@@ -302,7 +323,7 @@ def create_normal_user_token():
 
             if true_o_false:
                 expires = timedelta(hours=1)
-                user_id = existing_user.id
+                user_id = str(existing_user.id)
                 access_token = create_access_token(identity=user_id, expires_delta=expires)
                 return jsonify({'access_token': access_token, 'login': True, 'user_id': user_id}), 200
             else:
