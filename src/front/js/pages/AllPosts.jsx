@@ -3,7 +3,7 @@ import { Context } from '../store/appContext.js';
 import styles from './AllPosts.module.css';
 import { Container, Card, Image, Carousel } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import UserPic from '../../../front/img/profile-circle-svgrepo-com.png'
+import UserPic from '../../img/profile-circle-svgrepo-com.png'
 
 
 const AllPosts = () => {
@@ -62,7 +62,6 @@ const AllPosts = () => {
     const handleProfileClick = (username) => {
         navigate(`/profile/${username}`);
     };
-
     return (
         <Container className={styles.postsContainer}>
             <div className={styles.scrollContainer}>
@@ -72,7 +71,7 @@ const AllPosts = () => {
                             <div className={styles.authorInfo}>
                                 <Image
                                     loading="lazy"
-                                    src={post.author.profile_image_url || UserPic}
+                                    src={UserPic}
                                     roundedCircle
                                     className={styles.authorAvatar}
                                     onClick={() => handleProfileClick(post.author.username)}
@@ -95,7 +94,7 @@ const AllPosts = () => {
                                     >
                                         {post.images.map((image, index) => (
                                             <Carousel.Item key={index}>
-                                                <Image loading="lazy" src={image} className={styles.postImage} />
+                                                <Image loading="lazy" src={image || null} className={styles.postImage} />
                                             </Carousel.Item>
                                         ))}
                                     </Carousel>
