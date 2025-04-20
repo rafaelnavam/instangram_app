@@ -173,7 +173,7 @@ const AllPosts = () => {
                             <div className={styles.authorInfo}>
                                 <Image
                                     loading="lazy"
-                                    src={UserPic}
+                                    src={post.author.profile_image_url || UserPic}
                                     roundedCircle
                                     className={styles.authorAvatar}
                                     onClick={() => handleProfileClick(post.author.username)}
