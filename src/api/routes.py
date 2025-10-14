@@ -875,3 +875,16 @@ def delete_file_from_cloudinary(img_url):
         logging.error(f"Excepción al eliminar de Cloudinary: {str(e)}")
         return False
     
+
+@api.route('/health', methods=['GET'])
+def health_check():
+    try:
+
+        return {"status": "ok"}, 200
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "timestamp": datetime.now().isoformat(),
+            "error": str(e)
+        }, 500

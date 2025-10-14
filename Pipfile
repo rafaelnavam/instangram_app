@@ -31,6 +31,8 @@ pypdf2 = "*"
 celery = "*"
 redis = "*"
 requests = "*"
+apscheduler = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.10"

@@ -39,7 +39,7 @@ const AllPosts = () => {
     useEffect(() => {
         setTimeout(() => {
             setShowModal(false);
-        }, 5000);
+        }, 10000);
     }, []);
 
     const navigate = useNavigate();
