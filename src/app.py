@@ -13,7 +13,8 @@ from api.routes import api  # Importar el objeto Blueprint para los endpoints de
 from api.admin import setup_admin  # Importar la función para configurar el panel de administración
 from api.commands import setup_commands  # Importar la función para configurar comandos de Flask
 
-
+from api.scheduler_tasks import membership_scheduler
+import atexit
 
 #------------------carga de imagenes --------------------------------
 from werkzeug.utils import secure_filename # importacion de secure_filename para manejar imagen
@@ -94,6 +95,24 @@ setup_commands(app)  # Configurar comandos personalizados de Flask
 
 # Agregar todos los endpoints de la API con el prefijo "api"
 app.register_blueprint(api, url_prefix='/api')  # Registrar el Blueprint de la API con el prefijo de URL "/api"
+
+
+# ============= CONFIGURACIÓN DEL SCHEDULER =============
+# Inicializar el scheduler solo si no estamos en modo debug o si es el proceso principal
+if not app.debug or os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+    # Inicializar scheduler con la app
+    membership_scheduler.init_app(app)
+    
+    # Iniciar scheduler
+    if membership_scheduler.start_scheduler():
+        # Registrar función de limpieza para cuando la app se cierre
+        atexit.register(membership_scheduler.stop_scheduler)
+    else:
+        app.logger.warning("No se pudo iniciar el scheduler automático")
+
+# ============= FIN CONFIGURACIÓN DEL SCHEDULER =============
+
+
 
 # Manejar/serializar errores como un objeto JSON
 @app.errorhandler(APIException)
